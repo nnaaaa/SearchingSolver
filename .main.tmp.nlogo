@@ -7,29 +7,29 @@ globals [
 ]
 to setup
   ca
-  resize-world -20 20 -11 11
+  resize-world -0 20 -11 11
   set landcover gis:load-dataset "ktx/landcover-polygon.shp"
   set buildings gis:load-dataset "ktx/buildings-polygon.shp"
-  set roads gis:load-dataset "test/Mason_Rds.shp"
-  set buildings gis:load-dataset "test/Mason_walkway_line.shp"
+  set roads gis:load-dataset "ktx/roads-line.shp"
   ;Setup second section of the world which includes the farms
 
   ;Set the world envelope to match that of the asc files extracted from GIS
   gis:set-world-envelope (gis:envelope-of landcover)
   gis:set-world-envelope (gis:envelope-of buildings)
   gis:set-world-envelope (gis:envelope-of roads)
+
   gis:set-drawing-color 5  gis:draw roads 1.0
   gis:set-drawing-color 35  gis:draw buildings 1.0
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-182
+210
 10
-1215
-594
+751
+318
 -1
 -1
-25.0
+13.0
 1
 10
 1
@@ -50,10 +50,10 @@ ticks
 30.0
 
 BUTTON
-17
-26
-80
-59
+23
+27
+86
+60
 NIL
 setup
 NIL
