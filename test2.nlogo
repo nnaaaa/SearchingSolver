@@ -5,6 +5,13 @@ globals [
   landcover
   buildings
 ]
+
+patches-own[
+  centroid? ;; is it the centroid of a building?
+  id        ;; if it is a centroid of a building, it has a building ID
+  entrance  ;; nearest vertex on road. only for centroids.
+]
+
 to setup
   ca
   resize-world -20 20 -11 11
@@ -20,6 +27,16 @@ to setup
   gis:set-world-envelope (gis:envelope-of roads)
   gis:set-drawing-color 5  gis:draw roads 1.0
   gis:set-drawing-color 35  gis:draw buildings 1.0
+
+
+  foreach gis:feature-list-of buildings [
+    ?1 ->
+    let center-point gis:location-of gis:centroid-of ?1
+    ask patch item 0 center-point item 1 center-point [
+      set centroid? true
+      set id gis:property-value ?1 "Id"
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW

@@ -4,29 +4,184 @@ globals [
   roads
   landcover
   buildings
+
+  destination
 ]
+
+breed [vertices vertex]
+breed [commuters commuter]
+
+patches-own[
+  center?
+
+  path
+]
+
+vertices-own [
+  entrance?
+  check?
+]
+
 to setup
   ca
-  resize-world -0 20 -11 11
-  set landcover gis:load-dataset "ktx/landcover-polygon.shp"
+  resize-world -40 40 -20 20
+  reset-ticks
+  set destination nobody
+
   set buildings gis:load-dataset "ktx/buildings-polygon.shp"
+  gis:set-drawing-color gray gis:fill buildings 1
+  foreach gis:feature-list-of buildings [
+    building ->
+    let center gis:location-of gis:centroid-of building
+    ask patch item 0 center item 1 center [ set center? true ]
+  ]
+
   set roads gis:load-dataset "ktx/roads-line.shp"
-  ;Setup second section of the world which includes the farms
 
-  ;Set the world envelope to match that of the asc files extracted from GIS
-  gis:set-world-envelope (gis:envelope-of landcover)
-  gis:set-world-envelope (gis:envelope-of buildings)
-  gis:set-world-envelope (gis:envelope-of roads)
+  foreach gis:feature-list-of roads [
+    road-feature ->
+    foreach gis:vertex-lists-of road-feature [
+      v ->
 
-  gis:set-drawing-color 5  gis:draw roads 1.0
-  gis:set-drawing-color 35  gis:draw buildings 1.0
+      let pre-node-pointer nobody
+
+      foreach v [
+        node ->
+        let location gis:location-of node
+        if not empty? location [
+          create-vertices 1 [
+            set shape "star"
+            set size 0.3
+            set color brown
+            setxy item 0 location item 1 location
+            if pre-node-pointer != nobody [
+              create-link-with pre-node-pointer
+
+            ]
+
+            set pre-node-pointer self
+          ]
+        ]
+      ]
+    ]
+  ]
+
+  delete-duplicates
+  delete-not-connected
+
+  ask patches with [center? = true][
+    let entrance min-one-of vertices [distance myself]
+    ask entrance [
+      set entrance? true
+      set shape "star"
+      set size 0.8
+      set color red
+    ]
+  ]
+
+  ;; create the commuter agents
+  create-commuters number-of-commuters [
+    set color white
+    set size 1
+    set shape "person"
+    let mynode one-of vertices
+    move-to mynode
+  ]
+
+  ask links [set thickness 0.1 set color orange]
+
+end
+
+to delete-duplicates
+  ask vertices [
+    if count vertices-here > 1[
+      ask other vertices-here [
+        ask myself [
+          create-links-with other [link-neighbors] of myself
+        ]
+        die
+      ]
+    ]
+  ]
+
+end
+
+to delete-not-connected
+  ask vertices [set check? false]
+  ask one-of vertices [set check? true]
+  repeat 500 [
+    ask vertices with [ check? = true] [
+      ask link-neighbors [
+        set check? true
+      ]
+    ]
+  ]
+  ask vertices with [ check? = false][die]
+end
+
+to generate-destination
+  if destination != nobody [
+    ask destination [
+      set shape "star"
+      set size 0.3
+      set color brown
+    ]
+  ]
+
+  set destination one-of vertices with [ entrance? = true ]
+  ask destination [
+      set shape "target"
+      set size 1.5
+      set color yellow
+    ]
+end
+
+
+
+to gbfs
+  ask commuters [
+    set path []
+
+    set path lput one-of vertices-here path
+
+    while [last path != destination] [
+      let next-vertice min-one-of [link-neighbors] of last path [distance destination]
+      let pre-vertice last path
+
+
+      if next-vertice != nobody [
+        ask next-vertice [
+          ask link [who] of pre-vertice [who] of next-vertice  [set color yellow set thickness 0.3]
+
+        ]
+
+        set path lput next-vertice path
+      ]
+    ]
+  ]
+end
+
+to go
+  ask commuters [
+    let pre-vertice nobody
+    let next-vertice first path
+    let i 0
+    foreach path [
+      v ->
+      move-to v
+      if i != 0 [
+        set next-vertice v
+        ask link [who] of pre-vertice [who] of next-vertice  [set color yellow set thickness 0.]
+      ]
+    ]
+  ]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
 210
 10
-751
-318
+1271
+552
 -1
 -1
 13.0
@@ -39,12 +194,12 @@ GRAPHICS-WINDOW
 1
 1
 1
+-40
+40
 -20
 20
--11
-11
-0
-0
+1
+1
 1
 ticks
 30.0
@@ -56,6 +211,72 @@ BUTTON
 60
 NIL
 setup
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+SLIDER
+25
+86
+197
+119
+number-of-commuters
+number-of-commuters
+1
+100
+1.0
+1
+1
+NIL
+HORIZONTAL
+
+BUTTON
+26
+143
+173
+176
+generate destination
+generate-destination
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+30
+212
+163
+245
+Find path by GBFS
+gbfs
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+34
+274
+161
+307
+Go to Destination
+go
 NIL
 1
 T
