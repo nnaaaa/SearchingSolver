@@ -20,6 +20,8 @@ patches-own[
 vertices-own [
   entrance?
   check?
+
+  pre-vertice-pointer
 ]
 
 to setup
@@ -142,21 +144,56 @@ to gbfs
   ask commuters [
     set path []
 
-    set path lput one-of vertices-here path
+    let frontier []
+    let extended-state []
 
-    while [last path != destination] [
-      let next-vertice min-one-of [link-neighbors] of last path [distance destination]
-      let pre-vertice last path
+    let root one-of vertices-here
+    ask root [ set pre-vertice-pointer nobody ]
+    set frontier lput root frontier
 
+    while [not empty? frontier] [
 
-      if next-vertice != nobody [
-        ask next-vertice [
-          ask link [who] of pre-vertice [who] of next-vertice  [set color yellow set thickness 0.3]
+      set frontier sort-by [[v1 v2] -> [distance destination] of v1 < [distance destination] of v2] frontier
 
+      let current-vertice first frontier
+      set frontier but-first frontier
+
+      if current-vertice = destination [
+        while [current-vertice != ] [
+          set path fput current-vertice path
+          set current-vertice [pre-vertice-pointer] of current-vertice
+          show path
         ]
 
-        set path lput next-vertice path
+        stop
       ]
+
+      ask [link-neighbors] of current-vertice[
+        if not member? self extended-state [
+          set pre-vertice-pointer current-vertice
+          set frontier lput self frontier
+          set extended-state lput self extended-state
+        ]
+      ]
+;
+;
+;
+;      let next-vertice min-one-of [link-neighbors] of last path [distance destination]
+;      let pre-vertice last path
+;
+;
+;      ifelse next-vertice != nobody [
+;        ask next-vertice [
+;          ask link [who] of pre-vertice [who] of next-vertice  [set color yellow set thickness 0.3]
+;
+;        ]
+;
+;        set path lput next-vertice path
+;      ] [
+;
+;      ]
+
+
     ]
   ]
 end
@@ -171,8 +208,10 @@ to go
       move-to v
       if i != 0 [
         set next-vertice v
-        ask link [who] of pre-vertice [who] of next-vertice  [set color yellow set thickness 0.]
+        ask link [who] of pre-vertice [who] of next-vertice  [set color orange set thickness 0.1]
       ]
+      set pre-vertice next-vertice
+      set i (i + 1)
     ]
   ]
 end
