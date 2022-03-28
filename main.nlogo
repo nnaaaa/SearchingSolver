@@ -5,7 +5,7 @@ globals [
   landcover
   buildings
 
-  destination
+
 ]
 
 breed [vertices vertex]
@@ -14,21 +14,36 @@ breed [commuters commuter]
 patches-own[
   center?
 
-  path
 ]
 
 vertices-own [
   entrance?
   check?
 
+  hvalue
+
+  cost-gbfs
+  cost-a-star
+  cost-ucs
+  cost-bfs
+  cost-dfs
   pre-vertice-pointer
+]
+
+commuters-own [
+  path
+  destination
+  path-cost-gbfs
+  path-cost-a-star
+  path-cost-ucs
+  path-cost-bfs
+  path-cost-dfs
 ]
 
 to setup
   ca
   resize-world -40 40 -20 20
   reset-ticks
-  set destination nobody
 
   set buildings gis:load-dataset "ktx/buildings-polygon.shp"
   gis:set-drawing-color gray gis:fill buildings 1
@@ -86,7 +101,9 @@ to setup
     set color white
     set size 1
     set shape "person"
-    let mynode one-of vertices
+    set destination nobody
+    set path []
+    let mynode one-of vertices with [ center? != true ]
     move-to mynode
   ]
 
@@ -122,96 +139,361 @@ to delete-not-connected
 end
 
 to generate-destination
-  if destination != nobody [
-    ask destination [
-      set shape "star"
-      set size 0.3
-      set color brown
+  ask commuters [
+    if destination != nobody [
+      ask destination [
+        set shape "star"
+        set size 0.8
+        set color red
+      ]
     ]
-  ]
 
-  set destination one-of vertices with [ entrance? = true ]
-  ask destination [
-      set shape "target"
+    set destination one-of vertices with [ entrance? = true ]
+    ask destination [
       set size 1.5
       set color yellow
-    ]
-end
-
-
-
-to gbfs
-  ask commuters [
-    set path []
-
-    let frontier []
-    let extended-state []
-
-    let root one-of vertices-here
-    ask root [ set pre-vertice-pointer nobody ]
-    set frontier lput root frontier
-
-    while [not empty? frontier] [
-
-      set frontier sort-by [[v1 v2] -> [distance destination] of v1 < [distance destination] of v2] frontier
-
-      let current-vertice first frontier
-      set frontier but-first frontier
-
-      if current-vertice = destination [
-        while [current-vertice != root] [
-          set path fput current-vertice path
-          set current-vertice [pre-vertice-pointer] of current-vertice
-          show path
-        ]
-
-        stop
-      ]
-
-      ask [link-neighbors] of current-vertice[
-        if not member? self extended-state [
-          set pre-vertice-pointer current-vertice
-          set frontier lput self frontier
-          set extended-state lput self extended-state
-        ]
-      ]
-;
-;
-;
-;      let next-vertice min-one-of [link-neighbors] of last path [distance destination]
-;      let pre-vertice last path
-;
-;
-;      ifelse next-vertice != nobody [
-;        ask next-vertice [
-;          ask link [who] of pre-vertice [who] of next-vertice  [set color yellow set thickness 0.3]
-;
-;        ]
-;
-;        set path lput next-vertice path
-;      ] [
-;
-;      ]
-
-
     ]
   ]
 end
 
 to go
   ask commuters [
-    let pre-vertice nobody
-    let next-vertice first path
-    let i 0
-    foreach path [
-      v ->
-      move-to v
-      if i != 0 [
-        set next-vertice v
-        ask link [who] of pre-vertice [who] of next-vertice  [set color orange set thickness 0.1]
+    if not empty? path [
+      let pre-vertice nobody
+      let next-vertice first path
+      let i 0
+      foreach path [
+        v ->
+        move-to v
+        if i != 0 [
+          set next-vertice v
+          ask link [who] of pre-vertice [who] of next-vertice  [set color orange set thickness 0.1]
+        ]
+        set pre-vertice next-vertice
+        set i (i + 1)
       ]
-      set pre-vertice next-vertice
-      set i (i + 1)
+    ]
+  ]
+end
+
+to gbfs
+  ask commuters [
+    let cmter self
+    let des-of-cmter [destination] of cmter
+
+
+    if destination != nobody [
+      ;reset path of commuter
+      set path []
+
+      let frontier []
+      ask vertices [
+        set check? false
+        set hvalue [distance des-of-cmter] of self
+      ]
+
+      ;root is vertex that at the same patch with commuter
+      let root one-of vertices-here
+
+      ;push root to frontier
+      ask root [
+        set pre-vertice-pointer nobody
+        set cost-gbfs 0
+      ]
+      set frontier lput root frontier
+
+      while [not empty? frontier] [
+
+        ;vertex which h is minimum is first chosen
+        set frontier sort-by [[v1 v2] -> [hvalue] of v1 < [hvalue] of v2] frontier
+        let current-vertice first frontier
+        ask current-vertice [set check? true]
+        set frontier but-first frontier
+
+        if current-vertice = destination [
+          ;push all vertex lead to destination to path of commuter
+          set path-cost-gbfs 0
+          while [current-vertice != root] [
+            set path-cost-gbfs path-cost-gbfs + [cost-gbfs] of current-vertice
+            set path fput current-vertice path
+            set current-vertice [pre-vertice-pointer] of current-vertice
+
+            ;set link along path to another color
+            ask link [who] of current-vertice [who] of first path  [set color yellow set thickness 0.3]
+          ]
+          set path fput root path
+          stop
+        ]
+
+        ;push successors which were not in the extended-state to frontier
+        ask [link-neighbors] of current-vertice[
+          if not check? [
+            set cost-gbfs ([cost-gbfs] of current-vertice + distance current-vertice)
+            set pre-vertice-pointer current-vertice
+            set frontier lput self frontier
+          ]
+        ]
+      ]
+    ]
+  ]
+end
+
+to a-star
+  ask commuters [
+    let cmter self
+    let des-of-cmter [destination] of cmter
+
+    if destination != nobody [
+      ;reset path of commuter
+      set path []
+
+      let frontier []
+      ask vertices [
+        set check? false
+        set hvalue [distance des-of-cmter] of self
+      ]
+
+      ;root is vertex that at the same patch with commuter
+      let root one-of vertices-here
+
+      ;push root to frontier
+      ask root [
+        set pre-vertice-pointer nobody
+        set cost-a-star 0
+      ]
+      set frontier lput root frontier
+
+      while [not empty? frontier] [
+
+        ;vertex which h + g is minimum is first chosen
+        set frontier sort-by [[v1 v2] -> ([hvalue] of v1 + [cost-a-star] of v1) < ([hvalue] of v2 + [cost-a-star] of v2)]  frontier
+        let current-vertice first frontier
+        ask current-vertice [set check? true]
+        set frontier but-first frontier
+
+        if current-vertice = destination [
+          set path-cost-a-star 0
+          ;push all vertex lead to destination to path of commuter
+          while [current-vertice != root] [
+            set path-cost-a-star path-cost-a-star + [cost-a-star] of current-vertice
+            set path fput current-vertice path
+            set current-vertice [pre-vertice-pointer] of current-vertice
+
+            ;set link along path to another color
+            ask link [who] of current-vertice [who] of first path  [set color red set thickness 0.3]
+          ]
+          set path fput root path
+          stop
+        ]
+
+        ;push successors which were not in the extended-state to frontier
+        ask [link-neighbors] of current-vertice[
+          if not check? [
+            set pre-vertice-pointer current-vertice
+            ;path cost of "self"
+            set cost-a-star ([cost-a-star] of current-vertice + distance current-vertice)
+
+            let change-frontier? false
+            foreach frontier [
+              v ->
+              if v = self [
+                set change-frontier? true
+                ;if current vertex in frontier had path cost greater than successor "self", we would change current path cost to path cost of "self"
+                if ([cost-a-star] of self + hvalue) < ([cost-a-star] of v + [hvalue] of v) [
+                  ask v [set cost-a-star [cost-a-star] of myself]
+                ]
+              ]
+            ]
+            if change-frontier? = false [
+              set frontier lput self frontier
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+end
+
+to ucs
+  ask commuters [
+    let cmter self
+
+    if destination != nobody [
+      ;reset path of commuter
+      set path []
+
+      let frontier []
+      ask vertices [ set check? false ]
+
+      ;root is vertex that at the same patch with commuter
+      let root one-of vertices-here
+
+      ;push root to frontier
+      ask root [
+        set pre-vertice-pointer nobody
+        set cost-ucs 0
+      ]
+      set frontier lput root frontier
+
+      while [not empty? frontier] [
+
+        ;vertex which g is minimum is first chosen
+        set frontier sort-by [[v1 v2] -> [cost-a-star] of v1 < [cost-a-star] of v2]  frontier
+        let current-vertice first frontier
+        ask current-vertice [set check? true]
+        set frontier but-first frontier
+
+        if current-vertice = destination [
+          set path-cost-ucs 0
+          ;push all vertex lead to destination to path of commuter
+          while [current-vertice != root] [
+            set path-cost-ucs path-cost-ucs + [cost-ucs] of current-vertice
+            set path fput current-vertice path
+            set current-vertice [pre-vertice-pointer] of current-vertice
+
+            ;set link along path to another color
+            ask link [who] of current-vertice [who] of first path  [set color green set thickness 0.3]
+          ]
+          set path fput root path
+          stop
+        ]
+
+        ;push successors which were not in the extended-state to frontier
+        ask [link-neighbors] of current-vertice[
+          if not check? [
+            set pre-vertice-pointer current-vertice
+            ;path cost of "self"
+            set cost-ucs ([cost-ucs] of current-vertice + distance current-vertice)
+
+            let change-frontier? false
+            foreach frontier [
+              v ->
+              if v = self [
+                set change-frontier? true
+                ;if current vertex in frontier had path cost greater than successor "self", we would change current path cost to path cost of "self"
+                if [cost-a-star] of self < [cost-a-star] of v [
+                  ask v [set cost-ucs [cost-ucs] of myself]
+                ]
+              ]
+            ]
+            if change-frontier? = false [
+              set frontier lput self frontier
+            ]
+          ]
+        ]
+      ]
+    ]
+  ]
+end
+
+to bfs
+  ask commuters [
+    if destination != nobody [
+      ;reset path of commuter
+      set path []
+
+      let frontier []
+      ask vertices [
+        set check? false
+      ]
+
+      ;root is vertex that at the same patch with commuter
+      let root one-of vertices-here
+
+      ;push root to frontier
+      ask root [
+        set pre-vertice-pointer nobody
+        set cost-bfs 0
+      ]
+      set frontier lput root frontier
+
+      while [not empty? frontier] [
+
+        ;vertex which at front of frontier is first chosen
+        let current-vertice first frontier
+        ask current-vertice [set check? true]
+        set frontier but-first frontier
+
+        if current-vertice = destination [
+          ;push all vertex lead to destination to path of commuter
+          set path-cost-bfs 0
+          while [current-vertice != root] [
+            set path-cost-bfs path-cost-bfs + [cost-bfs] of current-vertice
+            set path fput current-vertice path
+            set current-vertice [pre-vertice-pointer] of current-vertice
+
+            ;set link along path to another color
+            ask link [who] of current-vertice [who] of first path  [set color green set thickness 0.3]
+          ]
+          set path fput root path
+          stop
+        ]
+
+        ;push successors which were not in the extended-state to frontier
+        ask [link-neighbors] of current-vertice[
+          if not check? [
+            set cost-bfs ([cost-bfs] of current-vertice + distance current-vertice)
+            set pre-vertice-pointer current-vertice
+            set frontier lput self frontier
+          ]
+        ]
+      ]
+    ]
+  ]
+end
+
+to dfs
+  ask commuters [
+    if destination != nobody [
+      ;reset path of commuter
+      set path []
+
+      let frontier []
+      ask vertices [
+        set check? false
+      ]
+
+      ;root is vertex that at the same patch with commuter
+      let root one-of vertices-here
+
+      ;push root to frontier
+      ask root [
+        set pre-vertice-pointer nobody
+        set cost-dfs 0
+      ]
+      set frontier lput root frontier
+
+      while [not empty? frontier] [
+
+        ;vertex which at front of frontier is first chosen
+        let current-vertice first frontier
+        ask current-vertice [set check? true]
+        set frontier but-first frontier
+
+        if current-vertice = destination [
+          ;push all vertex lead to destination to path of commuter
+          set path-cost-bfs 0
+          while [current-vertice != root] [
+            set path-cost-dfs path-cost-dfs + [cost-dfs] of current-vertice
+            set path fput current-vertice path
+            set current-vertice [pre-vertice-pointer] of current-vertice
+
+            ;set link along path to another color
+            ask link [who] of current-vertice [who] of first path  [set color pink set thickness 0.3]
+          ]
+          set path fput root path
+          stop
+        ]
+
+        ;unshift successors which were not in the extended-state to frontier
+        ask [link-neighbors] of current-vertice[
+          if not check? [
+            set cost-dfs ([cost-dfs] of current-vertice + distance current-vertice)
+            set pre-vertice-pointer current-vertice
+            set frontier fput self frontier
+          ]
+        ]
+      ]
     ]
   ]
 end
@@ -244,11 +526,11 @@ ticks
 30.0
 
 BUTTON
-23
-27
-86
-60
-NIL
+0
+10
+96
+43
+Create Map
 setup
 NIL
 1
@@ -261,10 +543,10 @@ NIL
 1
 
 SLIDER
-25
-86
-197
-119
+0
+48
+172
+81
 number-of-commuters
 number-of-commuters
 1
@@ -276,10 +558,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-26
-143
-173
-176
+0
+88
+147
+121
 generate destination
 generate-destination
 NIL
@@ -293,16 +575,16 @@ NIL
 0
 
 BUTTON
-30
-212
-163
-245
+0
+129
+110
+162
 Find path by GBFS
 gbfs
 NIL
 1
 T
-OBSERVER
+TURTLE
 NIL
 NIL
 NIL
@@ -310,10 +592,10 @@ NIL
 0
 
 BUTTON
-34
-274
-161
-307
+39
+410
+166
+443
 Go to Destination
 go
 NIL
@@ -324,6 +606,124 @@ NIL
 NIL
 NIL
 NIL
+1
+
+BUTTON
+0
+174
+119
+207
+Find path by A*
+a-star
+NIL
+1
+T
+TURTLE
+NIL
+NIL
+NIL
+NIL
+1
+
+TEXTBOX
+118
+137
+257
+155
+path color: yellow
+11
+0.0
+1
+
+TEXTBOX
+126
+185
+276
+203
+path color: red
+11
+0.0
+1
+
+BUTTON
+0
+217
+127
+250
+Find path by UCS
+ucs
+NIL
+1
+T
+TURTLE
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+0
+260
+125
+293
+Find path by BFS
+bfs
+NIL
+1
+T
+TURTLE
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+0
+307
+126
+340
+Find path by DFS
+dfs
+NIL
+1
+T
+TURTLE
+NIL
+NIL
+NIL
+NIL
+0
+
+TEXTBOX
+132
+316
+282
+334
+path color: pink
+11
+0.0
+1
+
+TEXTBOX
+132
+227
+282
+245
+path color: blue
+11
+0.0
+1
+
+TEXTBOX
+130
+271
+280
+289
+path color green
+11
+0.0
 1
 
 @#$#@#$#@
