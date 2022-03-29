@@ -4,8 +4,6 @@ globals [
   roads
   landcover
   buildings
-
-
 ]
 
 breed [vertices vertex]
@@ -31,7 +29,11 @@ vertices-own [
 ]
 
 commuters-own [
-  path
+  path-gbfs
+  path-a-star
+  path-ucs
+  path-bfs
+  path-dfs
   destination
   path-cost-gbfs
   path-cost-a-star
@@ -42,19 +44,22 @@ commuters-own [
 
 to setup
   ca
-  resize-world -40 40 -20 20
   reset-ticks
 
   set buildings gis:load-dataset "ktx/buildings-polygon.shp"
   gis:set-drawing-color gray gis:fill buildings 1
+  gis:set-world-envelope gis:envelope-of buildings
+
   foreach gis:feature-list-of buildings [
     building ->
     let center gis:location-of gis:centroid-of building
-    ask patch item 0 center item 1 center [ set center? true ]
+    ask patch item 0 center item 1 center [
+      set center? true
+      ;set plabel gis:property-value building "name"
+    ]
   ]
 
   set roads gis:load-dataset "ktx/roads-line.shp"
-
   foreach gis:feature-list-of roads [
     road-feature ->
     foreach gis:vertex-lists-of road-feature [
@@ -96,13 +101,17 @@ to setup
     ]
   ]
 
-  ;; create the commuter agents
+  ;;create the commuter agents
   create-commuters number-of-commuters [
     set color white
     set size 1
     set shape "person"
     set destination nobody
-    set path []
+    set path-gbfs []
+    set path-a-star []
+    set path-ucs []
+    set path-bfs []
+    set path-dfs []
     let mynode one-of vertices with [ center? != true ]
     move-to mynode
   ]
@@ -158,6 +167,13 @@ end
 
 to go
   ask commuters [
+    let path []
+    if search-strategy = "GBFS" [ set path path-gbfs ]
+    if search-strategy = "A*" [ set path path-a-star ]
+    if search-strategy = "UCS" [ set path path-ucs ]
+    if search-strategy = "BFS" [ set path path-bfs ]
+    if search-strategy = "DFS" [ set path path-dfs ]
+
     if not empty? path [
       let pre-vertice nobody
       let next-vertice first path
@@ -165,13 +181,17 @@ to go
       foreach path [
         v ->
         move-to v
+
         if i != 0 [
           set next-vertice v
           ask link [who] of pre-vertice [who] of next-vertice  [set color orange set thickness 0.1]
         ]
         set pre-vertice next-vertice
         set i (i + 1)
+        display
+        wait delay
       ]
+      ask links [set thickness 0.1 set color orange]
     ]
   ]
 end
@@ -184,7 +204,7 @@ to gbfs
 
     if destination != nobody [
       ;reset path of commuter
-      set path []
+      set path-gbfs []
 
       let frontier []
       ask vertices [
@@ -215,13 +235,13 @@ to gbfs
           set path-cost-gbfs 0
           while [current-vertice != root] [
             set path-cost-gbfs path-cost-gbfs + [cost-gbfs] of current-vertice
-            set path fput current-vertice path
+            set path-gbfs fput current-vertice path-gbfs
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path  [set color yellow set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow set thickness 0.3]
           ]
-          set path fput root path
+          set path-gbfs fput root path-gbfs
           stop
         ]
 
@@ -245,7 +265,7 @@ to a-star
 
     if destination != nobody [
       ;reset path of commuter
-      set path []
+      set path-a-star []
 
       let frontier []
       ask vertices [
@@ -276,13 +296,13 @@ to a-star
           ;push all vertex lead to destination to path of commuter
           while [current-vertice != root] [
             set path-cost-a-star path-cost-a-star + [cost-a-star] of current-vertice
-            set path fput current-vertice path
+            set path-a-star fput current-vertice path-a-star
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path  [set color red set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-a-star  [set color violet set thickness 0.3]
           ]
-          set path fput root path
+          set path-a-star fput root path-a-star
           stop
         ]
 
@@ -320,7 +340,7 @@ to ucs
 
     if destination != nobody [
       ;reset path of commuter
-      set path []
+      set path-ucs []
 
       let frontier []
       ask vertices [ set check? false ]
@@ -348,13 +368,13 @@ to ucs
           ;push all vertex lead to destination to path of commuter
           while [current-vertice != root] [
             set path-cost-ucs path-cost-ucs + [cost-ucs] of current-vertice
-            set path fput current-vertice path
+            set path-ucs fput current-vertice path-ucs
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path  [set color green set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-ucs  [set color green set thickness 0.3]
           ]
-          set path fput root path
+          set path-ucs fput root path-ucs
           stop
         ]
 
@@ -390,7 +410,7 @@ to bfs
   ask commuters [
     if destination != nobody [
       ;reset path of commuter
-      set path []
+      set path-bfs []
 
       let frontier []
       ask vertices [
@@ -419,13 +439,13 @@ to bfs
           set path-cost-bfs 0
           while [current-vertice != root] [
             set path-cost-bfs path-cost-bfs + [cost-bfs] of current-vertice
-            set path fput current-vertice path
+            set path-bfs fput current-vertice path-bfs
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path  [set color green set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-bfs  [set color green set thickness 0.3]
           ]
-          set path fput root path
+          set path-bfs fput root path-bfs
           stop
         ]
 
@@ -446,7 +466,7 @@ to dfs
   ask commuters [
     if destination != nobody [
       ;reset path of commuter
-      set path []
+      set path-dfs []
 
       let frontier []
       ask vertices [
@@ -475,13 +495,13 @@ to dfs
           set path-cost-bfs 0
           while [current-vertice != root] [
             set path-cost-dfs path-cost-dfs + [cost-dfs] of current-vertice
-            set path fput current-vertice path
+            set path-dfs fput current-vertice path-dfs
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path  [set color pink set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-dfs  [set color pink set thickness 0.3]
           ]
-          set path fput root path
+          set path-dfs fput root path-dfs
           stop
         ]
 
@@ -592,10 +612,10 @@ NIL
 0
 
 BUTTON
-39
-410
-166
-443
+33
+518
+160
+551
 Go to Destination
 go
 NIL
@@ -623,7 +643,7 @@ NIL
 NIL
 NIL
 NIL
-1
+0
 
 TEXTBOX
 118
@@ -640,7 +660,7 @@ TEXTBOX
 185
 276
 203
-path color: red
+path color: violet
 11
 0.0
 1
@@ -725,6 +745,31 @@ path color green
 11
 0.0
 1
+
+SLIDER
+1
+363
+173
+396
+delay
+delay
+0
+1
+0.2
+0.1
+1
+NIL
+HORIZONTAL
+
+CHOOSER
+30
+463
+168
+508
+search-strategy
+search-strategy
+"GBFS" "A*" "UCS" "BFS" "DFS"
+4
 
 @#$#@#$#@
 ## WHAT IS IT?
