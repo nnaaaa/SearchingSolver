@@ -188,6 +188,8 @@ to go
         ]
         set pre-vertice next-vertice
         set i (i + 1)
+
+        ;print the process of going to goal
         display
         wait delay
       ]
@@ -222,35 +224,54 @@ to gbfs
       ]
       set frontier lput root frontier
 
-      while [not empty? frontier] [
-
+      let foundGoal? false
+      while [not empty? frontier and foundGoal? = false] [
         ;vertex which h is minimum is first chosen
         set frontier sort-by [[v1 v2] -> [hvalue] of v1 < [hvalue] of v2] frontier
         let current-vertice first frontier
         ask current-vertice [set check? true]
         set frontier but-first frontier
 
-        if current-vertice = destination [
-          ;push all vertex lead to destination to path of commuter
-          set path-cost-gbfs 0
-          while [current-vertice != root] [
-            set path-cost-gbfs path-cost-gbfs + [cost-gbfs] of current-vertice
-            set path-gbfs fput current-vertice path-gbfs
-            set current-vertice [pre-vertice-pointer] of current-vertice
-
-            ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow set thickness 0.3]
-          ]
-          set path-gbfs fput root path-gbfs
-          stop
-        ]
-
         ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not check? [
+          if not check? and foundGoal? = false [
             set cost-gbfs ([cost-gbfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier lput self frontier
+
+            ;set link along path to another color
+            ask link [who] of current-vertice [who] of self  [set color yellow set thickness 0.3]
+
+            ;print path-find process sequentially
+            wait delay
+            display
+          ]
+
+          if self = des-of-cmter [
+
+            ;push all vertex lead to destination to path of commuter
+            ask cmter[
+              set path-cost-gbfs 0
+            ]
+            while [current-vertice != root] [
+              ask cmter[
+                set path-cost-gbfs path-cost-gbfs + [cost-gbfs] of current-vertice
+                set path-gbfs fput current-vertice path-gbfs
+                set current-vertice [pre-vertice-pointer] of current-vertice
+
+                ;set link along path to another color
+                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow - 3 set thickness 0.3]
+
+                ;print path-find process sequentially
+                wait delay
+                display
+              ]
+            ]
+            ask cmter[
+              set path-gbfs fput root path-gbfs
+            ]
+            set foundGoal? true
+            stop
           ]
         ]
       ]
@@ -284,7 +305,6 @@ to a-star
       set frontier lput root frontier
 
       while [not empty? frontier] [
-
         ;vertex which h + g is minimum is first chosen
         set frontier sort-by [[v1 v2] -> ([hvalue] of v1 + [cost-a-star] of v1) < ([hvalue] of v2 + [cost-a-star] of v2)]  frontier
         let current-vertice first frontier
@@ -300,7 +320,11 @@ to a-star
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-a-star  [set color violet set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-a-star  [set color violet - 3 set thickness 0.3]
+
+            ;print path-find process sequentially
+            wait delay
+            display
           ]
           set path-a-star fput root path-a-star
           stop
@@ -326,6 +350,11 @@ to a-star
             ]
             if change-frontier? = false [
               set frontier lput self frontier
+              ask link [who] of current-vertice [who] of self  [set color violet set thickness 0.3]
+
+              ;print path-find process sequentially
+              wait delay
+              display
             ]
           ]
         ]
@@ -356,9 +385,8 @@ to ucs
       set frontier lput root frontier
 
       while [not empty? frontier] [
-
         ;vertex which g is minimum is first chosen
-        set frontier sort-by [[v1 v2] -> [cost-a-star] of v1 < [cost-a-star] of v2]  frontier
+        set frontier sort-by [[v1 v2] -> [cost-ucs] of v1 < [cost-ucs] of v2]  frontier
         let current-vertice first frontier
         ask current-vertice [set check? true]
         set frontier but-first frontier
@@ -372,7 +400,11 @@ to ucs
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-ucs  [set color green set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-ucs  [set color blue - 3 set thickness 0.3]
+
+            ;print path-find process sequentially
+            wait delay
+            display
           ]
           set path-ucs fput root path-ucs
           stop
@@ -391,13 +423,20 @@ to ucs
               if v = self [
                 set change-frontier? true
                 ;if current vertex in frontier had path cost greater than successor "self", we would change current path cost to path cost of "self"
-                if [cost-a-star] of self < [cost-a-star] of v [
+                if [cost-ucs] of self < [cost-ucs] of v [
                   ask v [set cost-ucs [cost-ucs] of myself]
                 ]
               ]
             ]
             if change-frontier? = false [
               set frontier lput self frontier
+
+              ;set link along path to another color
+              ask link [who] of current-vertice [who] of self  [set color blue set thickness 0.3]
+
+              ;print path-find process sequentially
+              wait delay
+              display
             ]
           ]
         ]
@@ -409,6 +448,9 @@ end
 to bfs
   ask commuters [
     if destination != nobody [
+      let cmter self
+      let des-of-cmter [destination] of cmter
+
       ;reset path of commuter
       set path-bfs []
 
@@ -427,34 +469,56 @@ to bfs
       ]
       set frontier lput root frontier
 
-      while [not empty? frontier] [
+      let foundGoal? false
+      while [not empty? frontier and foundGoal? = false] [
 
         ;vertex which at front of frontier is first chosen
         let current-vertice first frontier
         ask current-vertice [set check? true]
         set frontier but-first frontier
 
-        if current-vertice = destination [
-          ;push all vertex lead to destination to path of commuter
-          set path-cost-bfs 0
-          while [current-vertice != root] [
-            set path-cost-bfs path-cost-bfs + [cost-bfs] of current-vertice
-            set path-bfs fput current-vertice path-bfs
-            set current-vertice [pre-vertice-pointer] of current-vertice
-
-            ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-bfs  [set color green set thickness 0.3]
-          ]
-          set path-bfs fput root path-bfs
-          stop
-        ]
-
         ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not check? [
+          if not check? and foundGoal? = false[
             set cost-bfs ([cost-bfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier lput self frontier
+
+            ;set link along path to another color
+            ask link [who] of current-vertice [who] of self  [set color green set thickness 0.3]
+
+            ;print path-find process sequentially
+            wait delay
+            display
+          ]
+
+          ;we stop the process whenever the successor is goal
+          if self = des-of-cmter [
+            set current-vertice self
+
+            ;push all vertex lead to destination to path of commuter
+            ask cmter[
+              set path-cost-bfs 0
+            ]
+            while [current-vertice != root] [
+              ask cmter[
+                set path-cost-bfs path-cost-bfs + [cost-bfs] of current-vertice
+                set path-bfs fput current-vertice path-bfs
+                set current-vertice [pre-vertice-pointer] of current-vertice
+
+                ;set link along path to another color
+                ask link [who] of current-vertice [who] of first path-bfs  [set color green - 3 set thickness 0.3]
+
+                ;print path-find process sequentially
+                wait delay
+                display
+              ]
+            ]
+            ask cmter[
+              set path-bfs fput root path-bfs
+            ]
+            set foundGoal? true
+            stop
           ]
         ]
       ]
@@ -465,6 +529,9 @@ end
 to dfs
   ask commuters [
     if destination != nobody [
+      let cmter self
+      let des-of-cmter [destination] of cmter
+
       ;reset path of commuter
       set path-dfs []
 
@@ -483,34 +550,57 @@ to dfs
       ]
       set frontier lput root frontier
 
-      while [not empty? frontier] [
+      let foundGoal? false
+      while [not empty? frontier and foundGoal? = false] [
 
         ;vertex which at front of frontier is first chosen
         let current-vertice first frontier
         ask current-vertice [set check? true]
         set frontier but-first frontier
 
-        if current-vertice = destination [
-          ;push all vertex lead to destination to path of commuter
-          set path-cost-bfs 0
-          while [current-vertice != root] [
-            set path-cost-dfs path-cost-dfs + [cost-dfs] of current-vertice
-            set path-dfs fput current-vertice path-dfs
-            set current-vertice [pre-vertice-pointer] of current-vertice
-
-            ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-dfs  [set color pink set thickness 0.3]
-          ]
-          set path-dfs fput root path-dfs
-          stop
-        ]
-
-        ;unshift successors which were not in the extended-state to frontier
+        ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not check? [
+          if not check? and foundGoal? = false [
             set cost-dfs ([cost-dfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier fput self frontier
+
+            ;set link along path to another color
+            ask link [who] of current-vertice [who] of self  [set color pink set thickness 0.3]
+
+            ;print path-find process sequentially
+            wait delay
+            display
+          ]
+
+          ;we stop the process whenever the successor is goal
+          if self = des-of-cmter [
+            set current-vertice self
+
+            ;push all vertex lead to destination to path of commuter
+            ask cmter[
+              set path-cost-bfs 0
+            ]
+            while [current-vertice != root] [
+              ask cmter[
+                set path-cost-dfs path-cost-dfs + [cost-dfs] of current-vertice
+                set path-dfs fput current-vertice path-dfs
+                set current-vertice [pre-vertice-pointer] of current-vertice
+
+                ;set link along path to another color
+                ask link [who] of current-vertice [who] of first path-dfs  [set color red set thickness 0.3]
+
+                ;print path-find process sequentially
+                show "find root"
+                wait delay
+                display
+              ]
+            ]
+            ask cmter[
+              set path-dfs fput root path-dfs
+            ]
+            set foundGoal? true
+            stop
           ]
         ]
       ]
@@ -604,7 +694,7 @@ gbfs
 NIL
 1
 T
-TURTLE
+OBSERVER
 NIL
 NIL
 NIL
@@ -638,7 +728,7 @@ a-star
 NIL
 1
 T
-TURTLE
+OBSERVER
 NIL
 NIL
 NIL
@@ -675,7 +765,7 @@ ucs
 NIL
 1
 T
-TURTLE
+OBSERVER
 NIL
 NIL
 NIL
@@ -692,7 +782,7 @@ bfs
 NIL
 1
 T
-TURTLE
+OBSERVER
 NIL
 NIL
 NIL
@@ -709,7 +799,7 @@ dfs
 NIL
 1
 T
-TURTLE
+OBSERVER
 NIL
 NIL
 NIL
@@ -755,7 +845,7 @@ delay
 delay
 0
 1
-0.2
+0.0
 0.1
 1
 NIL
