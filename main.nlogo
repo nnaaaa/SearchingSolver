@@ -178,6 +178,17 @@ to generate-destination
   ]
 end
 
+to clear-path
+  ask commuters[
+    set path-gbfs []
+    set path-a-star []
+    set path-ucs []
+    set path-bfs []
+    set path-dfs []
+  ]
+  ask links [set thickness 0.1 set color orange]
+end
+
 to go
   ask commuters [
     let path []
@@ -675,7 +686,7 @@ number-of-commuters
 number-of-commuters
 1
 100
-1.0
+14.0
 1
 1
 NIL
@@ -873,7 +884,7 @@ CHOOSER
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-3
+4
 
 BUTTON
 5
@@ -882,6 +893,23 @@ BUTTON
 136
 generate commuters
 generate-commuters
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+72
+469
+167
+502
+reset roads
+clear-path
 NIL
 1
 T

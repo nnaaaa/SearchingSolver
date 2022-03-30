@@ -178,6 +178,17 @@ to generate-destination
   ]
 end
 
+to clear-path
+  ask commuters[
+    set path-gbfs []
+    set path-a-star []
+    set path-ucs []
+    set path-bfs []
+    set path-dfs []
+  ]
+  ask links [set thickness 0.1 set color orange]
+end
+
 to go
   ask commuters [
     let path []
@@ -493,7 +504,7 @@ to bfs
 
         ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not visited?not member? self frontier and foundGoal? = false[
+          if not visited? and not member? self frontier and foundGoal? = false[
             set cost-bfs ([cost-bfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier lput self frontier
@@ -648,6 +659,23 @@ GRAPHICS-WINDOW
 1
 ticks
 30.0
+
+BUTTON
+0
+0
+0
+0
+NIL
+NIL
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 BUTTON
 0
@@ -873,7 +901,7 @@ CHOOSER
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-0
+3
 
 BUTTON
 5
