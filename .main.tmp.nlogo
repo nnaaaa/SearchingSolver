@@ -45,6 +45,7 @@ commuters-own [
 to setup
   ca
   reset-ticks
+
   import-buildings
   import-roads
 
@@ -99,7 +100,7 @@ to import-roads
   delete-duplicates
   delete-not-connected
 
-  ask links [set thickness 0.1 set color orange]
+  reset-entire-path
 end
 
 to delete-duplicates
@@ -147,7 +148,7 @@ to generate-commuters
   ;;create the commuter agents
   create-commuters number-of-commuters [
     set color white
-    set size 2
+    set size 1.2
     set shape "person business"
     set destination nobody
     set path-gbfs []
@@ -186,6 +187,10 @@ to clear-path
     set path-bfs []
     set path-dfs []
   ]
+  reset-entire-path
+end
+
+to reset-entire-path
   ask links [set thickness 0.1 set color orange]
 end
 
@@ -217,7 +222,7 @@ to go
         display
         wait delay
       ]
-      ask links [set thickness 0.1 set color orange]
+      reset-entire-path
     ]
   ]
 end
@@ -662,23 +667,6 @@ ticks
 
 BUTTON
 0
-0
-0
-0
-NIL
-NIL
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-0
 10
 96
 43
@@ -703,7 +691,7 @@ number-of-commuters
 number-of-commuters
 1
 100
-1.0
+14.0
 1
 1
 NIL
@@ -901,7 +889,7 @@ CHOOSER
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-3
+4
 
 BUTTON
 5
@@ -910,6 +898,23 @@ BUTTON
 136
 generate commuters
 generate-commuters
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+48
+477
+143
+510
+reset roads
+clear-path
 NIL
 1
 T
@@ -1317,5 +1322,5 @@ true
 Line -7500403 true 150 150 90 180
 Line -7500403 true 150 150 210 180
 @#$#@#$#@
-0
+1
 @#$#@#$#@
