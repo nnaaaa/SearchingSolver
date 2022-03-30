@@ -493,7 +493,7 @@ to bfs
 
         ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not visited? and not member? self frontier and foundGoal? = false[
+          if not visited?not member? self frontier and foundGoal? = false[
             set cost-bfs ([cost-bfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier lput self frontier
@@ -873,7 +873,7 @@ CHOOSER
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-3
+0
 
 BUTTON
 5
