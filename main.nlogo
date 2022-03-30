@@ -46,7 +46,7 @@ to setup
   ca
   reset-ticks
 
-  set buildings gis:load-dataset "ktx/buildings-polygon.shp"
+  set buildings gis:load-dataset "roadMap/4/4b.shp"
   gis:set-drawing-color gray gis:fill buildings 1
   gis:set-world-envelope gis:envelope-of buildings
 
@@ -59,7 +59,7 @@ to setup
     ]
   ]
 
-  set roads gis:load-dataset "ktx/roads-line.shp"
+  set roads gis:load-dataset "roadMap/4/4.shp"
   foreach gis:feature-list-of roads [
     road-feature ->
     foreach gis:vertex-lists-of road-feature [
