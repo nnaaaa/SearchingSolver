@@ -881,8 +881,8 @@ BUTTON
 12
 584
 138
-618
-clear path
+615
+reset roads
 clear-path
 NIL
 1
