@@ -35,6 +35,7 @@ commuters-own [
   path-bfs
   path-dfs
   destination
+  starting-point
   path-cost-gbfs
   path-cost-a-star
   path-cost-ucs
@@ -45,7 +46,6 @@ commuters-own [
 to setup
   ca
   reset-ticks
-
   import-buildings
   import-roads
 
@@ -143,10 +143,17 @@ to set-entrances
 end
 
 to generate-commuters
-  ask commuters[die]
+  ask commuters[
+    ask starting-point[
+      set shape "star"
+      set size 0.8
+      set color red
+    ]
+    die
+  ]
 
   ;;create the commuter agents
-  create-commuters number-of-commuters [
+  create-commuters 1 [
     set color white
     set size 1.2
     set shape "person business"
@@ -157,6 +164,12 @@ to generate-commuters
     set path-bfs []
     set path-dfs []
     let mynode one-of vertices with [ center? != true ]
+    set starting-point mynode
+
+    ask mynode[
+      set size 1.5
+      set color yellow
+    ]
     move-to mynode
   ]
 end
@@ -176,6 +189,7 @@ to generate-destination
       set size 1.5
       set color yellow
     ]
+
   ]
 end
 
@@ -222,7 +236,6 @@ to go
         display
         wait delay
       ]
-      reset-entire-path
     ]
   ]
 end
@@ -230,10 +243,14 @@ end
 to gbfs
   ask commuters [
     let cmter self
+
     let des-of-cmter [destination] of cmter
+    if go-back? = true[
+      set des-of-cmter [starting-point] of cmter
+    ]
 
 
-    if destination != nobody [
+    if des-of-cmter != nobody [
       ;reset path of commuter
       set path-gbfs []
 
@@ -313,8 +330,12 @@ to a-star
   ask commuters [
     let cmter self
     let des-of-cmter [destination] of cmter
+    if go-back? = true[
+      set des-of-cmter [starting-point] of cmter
+    ]
 
-    if destination != nobody [
+
+    if des-of-cmter != nobody [
       ;reset path of commuter
       set path-a-star []
 
@@ -341,7 +362,7 @@ to a-star
         ask current-vertice [set visited? true]
         set frontier but-first frontier
 
-        if current-vertice = destination [
+        if current-vertice = des-of-cmter [
           set path-cost-a-star 0
           ;push all vertex lead to destination to path of commuter
           while [current-vertice != root] [
@@ -396,8 +417,13 @@ end
 to ucs
   ask commuters [
     let cmter self
+    let des-of-cmter [destination] of cmter
+    if go-back? = true[
+      set des-of-cmter [starting-point] of cmter
+    ]
 
-    if destination != nobody [
+
+    if des-of-cmter != nobody [
       ;reset path of commuter
       set path-ucs []
 
@@ -421,7 +447,7 @@ to ucs
         ask current-vertice [set visited? true]
         set frontier but-first frontier
 
-        if current-vertice = destination [
+        if current-vertice = des-of-cmter [
           set path-cost-ucs 0
           ;push all vertex lead to destination to path of commuter
           while [current-vertice != root] [
@@ -477,10 +503,13 @@ end
 
 to bfs
   ask commuters [
-    if destination != nobody [
-      let cmter self
-      let des-of-cmter [destination] of cmter
+    let cmter self
+    let des-of-cmter [destination] of cmter
+    if go-back? = true[
+      set des-of-cmter [starting-point] of cmter
+    ]
 
+    if des-of-cmter != nobody [
       ;reset path of commuter
       set path-bfs []
 
@@ -558,10 +587,14 @@ end
 
 to dfs
   ask commuters [
-    if destination != nobody [
-      let cmter self
-      let des-of-cmter [destination] of cmter
+    let cmter self
+    let des-of-cmter [destination] of cmter
+    if go-back? = true[
+      set des-of-cmter [starting-point] of cmter
+    ]
 
+
+    if des-of-cmter != nobody [
       ;reset path of commuter
       set path-dfs []
 
@@ -637,6 +670,14 @@ to dfs
     ]
   ]
 end
+
+to find-path
+  if search-strategy = "GBFS" [ gbfs ]
+  if search-strategy = "A*" [ a-star ]
+  if search-strategy = "UCS" [ ucs ]
+  if search-strategy = "BFS" [ bfs ]
+  if search-strategy = "DFS" [ dfs ]
+end
 @#$#@#$#@
 GRAPHICS-WINDOW
 212
@@ -666,9 +707,9 @@ ticks
 30.0
 
 BUTTON
-0
 10
-96
+10
+106
 43
 Create Map
 setup
@@ -682,26 +723,11 @@ NIL
 NIL
 1
 
-SLIDER
-0
-48
-172
-81
-number-of-commuters
-number-of-commuters
-1
-100
-14.0
-1
-1
-NIL
-HORIZONTAL
-
 BUTTON
-4
-144
-151
-177
+10
+165
+157
+198
 generate destination
 generate-destination
 NIL
@@ -715,28 +741,11 @@ NIL
 0
 
 BUTTON
-4
-185
-114
-218
-Find path by GBFS
-gbfs
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-0
-
-BUTTON
-37
-574
-164
-607
-Go to Destination
+10
+540
+137
+573
+Go
 go
 NIL
 1
@@ -746,131 +755,63 @@ NIL
 NIL
 NIL
 NIL
-1
-
-BUTTON
-4
-230
-123
-263
-Find path by A*
-a-star
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
 0
 
 TEXTBOX
-122
-193
-261
-211
-path color: yellow
-11
-0.0
-1
-
-TEXTBOX
-130
-241
-280
-259
-path color: violet
-11
-0.0
-1
-
-BUTTON
-4
-273
-131
-306
-Find path by UCS
-ucs
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-0
-
-BUTTON
-4
-316
-129
-349
-Find path by BFS
-bfs
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-0
-
-BUTTON
-4
-363
-130
-396
-Find path by DFS
-dfs
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-0
-
-TEXTBOX
-136
-372
-286
-390
-path color: pink
-11
-0.0
-1
-
-TEXTBOX
-136
-283
-286
-301
-path color: blue
-11
-0.0
-1
-
-TEXTBOX
-134
-327
-284
+15
 345
-path color green
+154
+363
+path color of GBFS: yellow
+11
+0.0
+1
+
+TEXTBOX
+15
+375
+165
+393
+path color of A*: violet
+11
+0.0
+1
+
+TEXTBOX
+15
+465
+165
+483
+path color of DFS: pink
+11
+0.0
+1
+
+TEXTBOX
+15
+405
+165
+423
+path color of UCS: blue
+11
+0.0
+1
+
+TEXTBOX
+15
+435
+165
+453
+path color of BFS: green
 11
 0.0
 1
 
 SLIDER
-5
-419
-177
-452
+10
+55
+182
+88
 delay
 delay
 0
@@ -882,20 +823,20 @@ NIL
 HORIZONTAL
 
 CHOOSER
-34
-519
-172
-564
+10
+235
+148
+280
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-4
+1
 
 BUTTON
-5
-103
-151
-136
+10
+125
+156
+158
 generate commuters
 generate-commuters
 NIL
@@ -906,13 +847,41 @@ NIL
 NIL
 NIL
 NIL
+0
+
+SWITCH
+10
+290
+112
+323
+go-back?
+go-back?
+0
 1
+-1000
 
 BUTTON
-48
-477
-143
-510
+10
+500
+137
+534
+Find path
+find-path
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+12
+584
+138
+615
 reset roads
 clear-path
 NIL
@@ -923,7 +892,7 @@ NIL
 NIL
 NIL
 NIL
-1
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
