@@ -1,29 +1,35 @@
-# Map key color 🌃
+# 🗺 Map key 
 
-### polygon: <br>
+> ### polygon <br>
 
-- land: ![](color/33.PNG)
-- water: ![](color/85.PNG)
-- amenity buildings: ![](color/133.PNG)
-- buildings: ![](color/5.PNG)
+- land: ![](map_color/33.PNG) ![](map_key/land.PNG)
+- water: ![](map_color/85.PNG) ![](map_key/water.PNG)
+- amenity buildings: ![](map_color/133.PNG) ![](map_key/amenity.PNG)
+- buildings: ![](map_color/5.PNG) ![](map_key/building.PNG)
 
-### line: <br>
+> ### line <br>
 
-- roads: ![](color/23.PNG)
+- roads: ![](map_color/23.PNG) ![](map_key/road.PNG)
 
 - path used in search strategies:
-    - GBFS: ![](color/45.PNG) ![](color/49.PNG)
-    - A*: ![](color/115.PNG) ![](color/119.PNG)
-    - UCS: ![](color/105.PNG) ![](color/109.PNG)
-    - BFS: ![](color/55.PNG) ![](color/59.PNG)
-    - DFS: ![](color/135.PNG) ![](color/139.PNG)
+    - GBFS: ![](map_color/45.PNG) ![](map_color/49.PNG) ![](map_key/gbfs.PNG)
 
-### point: <br>
+    - A*: ![](map_color/115.PNG) ![](map_color/119.PNG) ![](map_key/a_star.PNG)
 
-- destination (home): ![](color/45.PNG)
-- agent (people): ![](color/9.9.PNG)
-- entrance (entrance of each perspective building): ![](color/75.PNG)
-- jam (intersection which in rush hours): ![](color/15.PNG)
+    - UCS: ![](map_color/105.PNG) ![](map_color/109.PNG) ![](map_key/ucs.PNG)
+
+    - BFS: ![](map_color/55.PNG) ![](map_color/59.PNG) ![](map_key/bfs.PNG)
+
+    - DFS: ![](map_color/135.PNG) ![](map_color/139.PNG) ![](map_key/dfs.PNG)
+
+
+> ### point <br>
+
+- junction: ![](map_color/35.PNG) ![](map_key/junction.PNG) 
+- destination (home): ![](map_color/45.PNG) ![](map_key/home.PNG) 
+- agent (people): ![](map_color/9.9.PNG) ![](map_key/people.PNG)
+- entrance (entrance of each perspective building): ![](map_color/75.PNG) ![](map_key/entrance.PNG)
+- jam (junction which in rush hours): ![](map_color/15.PNG) ![](map_key/jam.PNG)
 
 
 

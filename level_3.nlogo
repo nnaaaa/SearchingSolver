@@ -56,6 +56,10 @@ to setup
   import-buildings
   import-roads
 
+  import-scenes
+  import-buildings
+  import-roads
+
   set destination nobody
   set-entrances
 
@@ -63,47 +67,55 @@ end
 
 to import-scenes
   if map-type = "Tokyo_Japan"[
-    set waters gis:load-dataset "roadMap/1/water_areas-polygon.shp"
-    set landcover gis:load-dataset "roadMap/1/landcover-polygon.shp"
-    set amenity gis:load-dataset "roadMap/1/amenity_polygons-polygon.shp"
+    set waters gis:load-dataset "map/1/water_areas-polygon.shp"
+    set landcover gis:load-dataset "map/1/landcover-polygon.shp"
+    set amenity gis:load-dataset "map/1/amenity_polygons-polygon.shp"
   ]
   if map-type = "Florida_American"[
-    set waters gis:load-dataset "roadMap/2/water_areas-polygon.shp"
-    set landcover gis:load-dataset "roadMap/2/landcover-polygon.shp"
-    set amenity gis:load-dataset "roadMap/2/amenity_polygons-polygon.shp"
+    set waters gis:load-dataset "map/2/water_areas-polygon.shp"
+    set landcover gis:load-dataset "map/2/landcover-polygon.shp"
+    set amenity gis:load-dataset "map/2/amenity_polygons-polygon.shp"
   ]
-  if map-type = "HoChiMinh_VietNam"[
-    set waters gis:load-dataset "roadMap/3/water_areas-polygon.shp"
-    set landcover gis:load-dataset "roadMap/3/landcover-polygon.shp"
-    set amenity gis:load-dataset "roadMap/3/amenity_polygons-polygon.shp"
+  if map-type = "HoChiMinh_District-7_VietNam"[
+    set waters gis:load-dataset "map/3/water_areas-polygon.shp"
+    set landcover gis:load-dataset "map/3/landcover-polygon.shp"
+    set amenity gis:load-dataset "map/3/amenity_polygons-polygon.shp"
   ]
-  if map-type = "Nasik_India"[
-    set waters gis:load-dataset "roadMap/4/water_areas-polygon.shp"
-    set landcover gis:load-dataset "roadMap/4/landcover-polygon.shp"
-    set amenity gis:load-dataset "roadMap/4/amenity_polygons-polygon.shp"
+  if map-type = "Changchun_China"[
+    set waters gis:load-dataset "map/4/water_areas-polygon.shp"
+    set landcover gis:load-dataset "map/4/landcover-polygon.shp"
+    set amenity gis:load-dataset "map/4/amenity_polygons-polygon.shp"
+  ]
+  if map-type = "Kyiv_Ukraine"[
+    set waters gis:load-dataset "map/5/water_areas-polygon.shp"
+    set landcover gis:load-dataset "map/5/landcover-polygon.shp"
+    set amenity gis:load-dataset "map/5/amenity_polygons-polygon.shp"
   ]
 
-  gis:set-drawing-color cyan gis:fill waters 1
   gis:set-drawing-color 33 gis:fill landcover 3
   gis:set-drawing-color 133 gis:fill amenity 1
+  gis:set-drawing-color cyan gis:fill waters 1
 end
 
 to import-buildings
   if map-type = "Tokyo_Japan"[
-    set buildings gis:load-dataset "roadMap/1/buildings-polygon.shp"
+    set buildings gis:load-dataset "map/1/buildings-polygon.shp"
   ]
   if map-type = "Florida_American"[
-    set buildings gis:load-dataset "roadMap/2/buildings-polygon.shp"
+    set buildings gis:load-dataset "map/2/buildings-polygon.shp"
   ]
-  if map-type = "HoChiMinh_VietNam"[
-    set buildings gis:load-dataset "roadMap/3/buildings-polygon.shp"
+  if map-type = "HoChiMinh_District-7_VietNam"[
+    set buildings gis:load-dataset "map/3/buildings-polygon.shp"
   ]
-  if map-type = "Nasik_India"[
-    set buildings gis:load-dataset "roadMap/4/buildings-polygon.shp"
+  if map-type = "Changchun_China"[
+    set buildings gis:load-dataset "map/4/buildings-polygon.shp"
+  ]
+  if map-type = "Kyiv_Ukraine"[
+    set buildings gis:load-dataset "map/5/buildings-polygon.shp"
   ]
 
-  gis:set-drawing-color gray gis:fill buildings 1
   gis:set-world-envelope gis:envelope-of buildings
+  gis:set-drawing-color gray gis:fill buildings 1
 
   foreach gis:feature-list-of buildings [
     building ->
@@ -118,16 +130,19 @@ end
 to import-roads
 
   if map-type = "Tokyo_Japan"[
-    set roads gis:load-dataset "roadMap/1/roads-line.shp"
+    set roads gis:load-dataset "map/1/roads-line.shp"
   ]
   if map-type = "Florida_American"[
-    set roads gis:load-dataset "roadMap/2/roads-line.shp"
+    set roads gis:load-dataset "map/2/roads-line.shp"
   ]
-  if map-type = "HoChiMinh_VietNam"[
-    set roads gis:load-dataset "roadMap/3/roads-line.shp"
+  if map-type = "HoChiMinh_District-7_VietNam"[
+    set roads gis:load-dataset "map/3/roads-line.shp"
   ]
-  if map-type = "Nasik_India"[
-    set roads gis:load-dataset "roadMap/4/roads-line.shp"
+  if map-type = "Changchun_China"[
+    set roads gis:load-dataset "map/4/roads-line.shp"
+  ]
+  if map-type = "Kyiv_Ukraine"[
+    set roads gis:load-dataset "map/5/roads-line.shp"
   ]
 
   foreach gis:feature-list-of roads [
@@ -705,13 +720,13 @@ to dfs [#commuter]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-212
-10
-1516
-675
+218
+12
+1433
+632
 -1
 -1
-16.0
+14.90244
 1
 10
 1
@@ -856,7 +871,7 @@ delay
 delay
 0
 1
-0.0
+0.1
 0.1
 1
 seconds
@@ -939,7 +954,7 @@ rush-hours-probability
 rush-hours-probability
 0
 100
-8.0
+5.0
 1
 1
 %
@@ -948,12 +963,12 @@ HORIZONTAL
 CHOOSER
 9
 12
-167
+204
 57
 map-type
 map-type
-"Tokyo_Japan" "Florida_American" "HoChiMinh_VietNam" "Nasik_India"
-0
+"Tokyo_Japan" "Florida_American" "HoChiMinh_District-7_VietNam" "Changchun_China" "Kyiv_Ukraine"
+2
 
 @#$#@#$#@
 ## WHAT IS IT?
