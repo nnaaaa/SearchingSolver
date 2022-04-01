@@ -136,7 +136,7 @@ to set-entrances
       set entrance? true
       set shape "star"
       set size 0.8
-      set color red
+      set color turquoise
     ]
   ]
 end
@@ -195,7 +195,7 @@ to clear-path
 end
 
 to reset-entire-path
-  ask links [set thickness 0.1 set color orange]
+  ask links [set thickness 0.1 set color 134]
 end
 
 to go
@@ -294,7 +294,7 @@ to gbfs
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow - 3 set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow + 4 set thickness 0.3]
 
                 ;print path-find process sequentially
                 wait delay
@@ -354,7 +354,7 @@ to a-star
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-a-star  [set color violet - 3 set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-a-star  [set color violet + 4 set thickness 0.3]
 
             ;print path-find process sequentially
             wait delay
@@ -434,7 +434,7 @@ to ucs
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-ucs  [set color blue - 3 set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-ucs  [set color blue + 4 set thickness 0.3]
 
             ;print path-find process sequentially
             wait delay
@@ -541,7 +541,7 @@ to bfs
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-bfs  [set color green - 3 set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-bfs  [set color green + 4 set thickness 0.3]
 
                 ;print path-find process sequentially
                 wait delay
@@ -622,7 +622,7 @@ to dfs
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-dfs  [set color red set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-dfs  [set color pink + 4 set thickness 0.3]
 
                 ;print path-find process sequentially
                 show "find root"
@@ -878,7 +878,7 @@ CHOOSER
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-0
+4
 
 BUTTON
 5

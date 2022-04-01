@@ -136,7 +136,7 @@ to set-entrances
       set entrance? true
       set shape "star"
       set size 0.8
-      set color red
+      set color turquoise
     ]
   ]
 end
@@ -195,7 +195,7 @@ to clear-path
 end
 
 to reset-entire-path
-  ask links [set thickness 0.1 set color orange]
+  ask links [set thickness 0.1 set color 134]
 end
 
 to go
@@ -294,7 +294,7 @@ to gbfs
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow - 3 set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow  3 set thickness 0.3]
 
                 ;print path-find process sequentially
                 wait delay
