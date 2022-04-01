@@ -1,8 +1,11 @@
 Extensions [gis]
 
 globals [
-  roads
+  waters
   landcover
+  amenity
+
+  roads
   buildings
 ]
 
@@ -45,6 +48,7 @@ commuters-own [
 to setup
   ca
   reset-ticks
+  import-scenes
   import-buildings
   import-roads
 
@@ -52,18 +56,45 @@ to setup
 
 end
 
-to import-buildings
+to import-scenes
   if map-type = "Tokyo_Japan"[
-    set buildings gis:load-dataset "roadMap/1/1b.shp"
+    set waters gis:load-dataset "roadMap/1/water_areas-polygon.shp"
+    set landcover gis:load-dataset "roadMap/1/landcover-polygon.shp"
+    set amenity gis:load-dataset "roadMap/1/amenity_polygons-polygon.shp"
   ]
   if map-type = "Florida_American"[
-    set buildings gis:load-dataset "roadMap/2/2b.shp"
+    set waters gis:load-dataset "roadMap/2/water_areas-polygon.shp"
+    set landcover gis:load-dataset "roadMap/2/landcover-polygon.shp"
+    set amenity gis:load-dataset "roadMap/2/amenity_polygons-polygon.shp"
   ]
   if map-type = "HoChiMinh_VietNam"[
-    set buildings gis:load-dataset "roadMap/3/3b.shp"
+    set waters gis:load-dataset "roadMap/3/water_areas-polygon.shp"
+    set landcover gis:load-dataset "roadMap/3/landcover-polygon.shp"
+    set amenity gis:load-dataset "roadMap/3/amenity_polygons-polygon.shp"
   ]
   if map-type = "Nasik_India"[
-    set buildings gis:load-dataset "roadMap/4/4b.shp"
+    set waters gis:load-dataset "roadMap/4/water_areas-polygon.shp"
+    set landcover gis:load-dataset "roadMap/4/landcover-polygon.shp"
+    set amenity gis:load-dataset "roadMap/4/amenity_polygons-polygon.shp"
+  ]
+
+  gis:set-drawing-color cyan gis:fill waters 1
+  gis:set-drawing-color  gis:fill landcover 3
+  gis:set-drawing-color 43 gis:fill amenity 1
+end
+
+to import-buildings
+  if map-type = "Tokyo_Japan"[
+    set buildings gis:load-dataset "roadMap/1/buildings-polygon.shp"
+  ]
+  if map-type = "Florida_American"[
+    set buildings gis:load-dataset "roadMap/2/buildings-polygon.shp"
+  ]
+  if map-type = "HoChiMinh_VietNam"[
+    set buildings gis:load-dataset "roadMap/3/buildings-polygon.shp"
+  ]
+  if map-type = "Nasik_India"[
+    set buildings gis:load-dataset "roadMap/4/buildings-polygon.shp"
   ]
 
   gis:set-drawing-color gray gis:fill buildings 1
@@ -81,16 +112,16 @@ end
 
 to import-roads
   if map-type = "Tokyo_Japan"[
-    set roads gis:load-dataset "roadMap/1/1.shp"
+    set roads gis:load-dataset "roadMap/1/roads-line.shp"
   ]
   if map-type = "Florida_American"[
-    set roads gis:load-dataset "roadMap/2/2.shp"
+    set roads gis:load-dataset "roadMap/2/roads-line.shp"
   ]
   if map-type = "HoChiMinh_VietNam"[
-    set roads gis:load-dataset "roadMap/3/3.shp"
+    set roads gis:load-dataset "roadMap/3/roads-line.shp"
   ]
   if map-type = "Nasik_India"[
-    set roads gis:load-dataset "roadMap/4/4.shp"
+    set roads gis:load-dataset "roadMap/4/roads-line.shp"
   ]
 
 
@@ -982,7 +1013,7 @@ CHOOSER
 map-type
 map-type
 "Tokyo_Japan" "Florida_American" "HoChiMinh_VietNam" "Nasik_India"
-3
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
