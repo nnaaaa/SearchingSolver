@@ -4,8 +4,6 @@ globals [
   roads
   landcover
   buildings
-
-  destination
 ]
 
 breed [vertices vertex]
@@ -31,13 +29,12 @@ vertices-own [
 ]
 
 commuters-own [
-  strategy
-
   path-gbfs
   path-a-star
   path-ucs
   path-bfs
   path-dfs
+  destination
   path-cost-gbfs
   path-cost-a-star
   path-cost-ucs
@@ -51,7 +48,6 @@ to setup
   import-buildings
   import-roads
 
-  set destination nobody
   set-entrances
 
 end
@@ -149,47 +145,41 @@ to generate-commuters
   ask commuters[die]
 
   ;;create the commuter agents
-  create-commuters number-of-commuters [
+  create-commuters 1 [
     set color white
     set size 1.2
     set shape "person business"
+    set destination nobody
     set path-gbfs []
     set path-a-star []
     set path-ucs []
     set path-bfs []
     set path-dfs []
-    set strategy ""
     let mynode one-of vertices with [ center? != true ]
     move-to mynode
-  ]
-end
-
-to rand-search-strategy
-  let strategy-list ["GBFS" "A*" "UCS" "BFS" "DFS"]
-
-  ask commuters[
-    set strategy one-of strategy-list
-    if strategy = "GBFS" [ set color yellow ]
-    if strategy = "A*" [ set color violet ]
-    if strategy = "UCS" [ set color blue ]
-    if strategy = "BFS" [ set color green ]
-    if strategy = "DFS" [ set color pink ]
+    watch-me
   ]
 end
 
 to generate-destination
-  if destination != nobody [
-    ask destination [
-      set shape "star"
-      set size 0.8
-      set color red
+  ask commuters [
+    if destination != nobody [
+      ask destination [
+        set shape "star"
+        set size 0.8
+        set color red
+      ]
     ]
-  ]
 
-  set destination one-of vertices with [ entrance? = true ]
-  ask destination [
-    set size 1.5
-    set color yellow
+    set destination one-of vertices with [ entrance? = true ]
+    ask destination [
+      set size 1.5
+      set color yellow
+
+      watch-me
+    ]
+
+
   ]
 end
 
@@ -208,58 +198,46 @@ to reset-entire-path
   ask links [set thickness 0.1 set color orange]
 end
 
-to find-path
-  ask commuters[
-    if strategy = "GBFS" [ gbfs ]
-    if strategy = "A*" [ a-star ]
-    if strategy = "UCS" [ ucs ]
-    if strategy = "BFS" [ bfs ]
-    if strategy = "DFS" [ dfs ]
-  ]
-end
-
 to go
   ask commuters [
-    if strategy != "" [
-      let path []
-      if strategy = "GBFS" [ set path path-gbfs ]
-      if strategy = "A*" [ set path path-a-star ]
-      if strategy = "UCS" [ set path path-ucs ]
-      if strategy = "BFS" [ set path path-bfs ]
-      if strategy = "DFS" [ set path path-dfs ]
+    let path []
+    if search-strategy = "GBFS" [ set path path-gbfs ]
+    if search-strategy = "A*" [ set path path-a-star ]
+    if search-strategy = "UCS" [ set path path-ucs ]
+    if search-strategy = "BFS" [ set path path-bfs ]
+    if search-strategy = "DFS" [ set path path-dfs ]
 
-      if not empty? path [
-        let pre-vertice nobody
-        let next-vertice first path
-        let i 0
-        foreach path [
-          v ->
-          move-to v
-
-          if i != 0 [
-            set next-vertice v
-            ask link [who] of pre-vertice [who] of next-vertice  [set color orange set thickness 0.1]
-          ]
-          set pre-vertice next-vertice
-          set i (i + 1)
-
-          ;print the process of going to goal
-          display
-          wait delay
+    if not empty? path [
+      let pre-vertice nobody
+      let next-vertice first path
+      let i 0
+      foreach path [
+        v ->
+        move-to v
+        watch-me
+        if i != 0 [
+          set next-vertice v
+          ask link [who] of pre-vertice [who] of next-vertice  [set color orange set thickness 0.1]
         ]
-      ]
-    ]
+        set pre-vertice next-vertice
+        set i (i + 1)
 
+        ;print the process of going to goal
+        display
+        wait delay
+      ]
+      reset-entire-path
+    ]
   ]
 end
 
-to gbfs [#commuter]
-  ask #commuter [
+to gbfs
+  ask commuters [
     let cmter self
-    let des-of-cmter destination
+    let des-of-cmter [destination] of cmter
 
 
-    if des-of-cmter != nobody [
+    if destination != nobody [
       ;reset path of commuter
       set path-gbfs []
 
@@ -284,7 +262,7 @@ to gbfs [#commuter]
         ;vertex which h is minimum is first chosen
         set frontier sort-by [[v1 v2] -> [hvalue] of v1 < [hvalue] of v2] frontier
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         ;push successors which were not in the extended-state to frontier
@@ -295,11 +273,11 @@ to gbfs [#commuter]
             set frontier lput self frontier
 
             ;set link along path to another color
-;            ask link [who] of current-vertice [who] of self  [set color yellow set thickness 0.3]
-;
-;            ;print path-find process sequentially
-;            wait delay
-;            display
+            ask link [who] of current-vertice [who] of self  [set color yellow set thickness 0.3]
+
+            ;print path-find process sequentially
+            wait delay
+            display
           ]
 
           if self = des-of-cmter [
@@ -316,7 +294,7 @@ to gbfs [#commuter]
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow - 3 set thickness 0.3]
 
                 ;print path-find process sequentially
                 wait delay
@@ -335,12 +313,12 @@ to gbfs [#commuter]
   ]
 end
 
-to a-star [#commuter]
-  ask #commuter [
+to a-star
+  ask commuters [
     let cmter self
-    let des-of-cmter destination
+    let des-of-cmter [destination] of cmter
 
-    if des-of-cmter != nobody [
+    if destination != nobody [
       ;reset path of commuter
       set path-a-star []
 
@@ -364,10 +342,10 @@ to a-star [#commuter]
         ;vertex which h + g is minimum is first chosen
         set frontier sort-by [[v1 v2] -> ([hvalue] of v1 + [cost-a-star] of v1) < ([hvalue] of v2 + [cost-a-star] of v2)]  frontier
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
-        if current-vertice = des-of-cmter [
+        if current-vertice = destination [
           set path-cost-a-star 0
           ;push all vertex lead to destination to path of commuter
           while [current-vertice != root] [
@@ -376,7 +354,7 @@ to a-star [#commuter]
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-a-star  [set color violet set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-a-star  [set color violet - 3 set thickness 0.3]
 
             ;print path-find process sequentially
             wait delay
@@ -406,11 +384,11 @@ to a-star [#commuter]
             ]
             if change-frontier? = false [
               set frontier lput self frontier
-;              ask link [who] of current-vertice [who] of self  [set color violet set thickness 0.3]
-;
-;              ;print path-find process sequentially
-;              wait delay
-;              display
+              ask link [who] of current-vertice [who] of self  [set color violet set thickness 0.3]
+
+              ;print path-find process sequentially
+              wait delay
+              display
             ]
           ]
         ]
@@ -444,7 +422,7 @@ to ucs
         ;vertex which g is minimum is first chosen
         set frontier sort-by [[v1 v2] -> [cost-ucs] of v1 < [cost-ucs] of v2]  frontier
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         if current-vertice = destination [
@@ -456,7 +434,7 @@ to ucs
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-ucs  [set color blue set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-ucs  [set color blue - 3 set thickness 0.3]
 
             ;print path-find process sequentially
             wait delay
@@ -487,12 +465,12 @@ to ucs
             if change-frontier? = false [
               set frontier lput self frontier
 
-;              ;set link along path to another color
-;              ask link [who] of current-vertice [who] of self  [set color blue set thickness 0.3]
-;
-;              ;print path-find process sequentially
-;              wait delay
-;              display
+              ;set link along path to another color
+              ask link [who] of current-vertice [who] of self  [set color blue set thickness 0.3]
+
+              ;print path-find process sequentially
+              wait delay
+              display
             ]
           ]
         ]
@@ -505,7 +483,7 @@ to bfs
   ask commuters [
     if destination != nobody [
       let cmter self
-      let des-of-cmter destination
+      let des-of-cmter [destination] of cmter
 
       ;reset path of commuter
       set path-bfs []
@@ -530,7 +508,7 @@ to bfs
 
         ;vertex which at front of frontier is first chosen
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         ;push successors which were not in the extended-state to frontier
@@ -541,11 +519,11 @@ to bfs
             set frontier lput self frontier
 
             ;set link along path to another color
-;            ask link [who] of current-vertice [who] of self  [set color green set thickness 0.3]
-;
-;            ;print path-find process sequentially
-;            wait delay
-;            display
+            ask link [who] of current-vertice [who] of self  [set color green set thickness 0.3]
+
+            ;print path-find process sequentially
+            wait delay
+            display
           ]
 
           ;we stop the process whenever the successor is goal
@@ -563,7 +541,7 @@ to bfs
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-bfs  [set color green set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-bfs  [set color green - 3 set thickness 0.3]
 
                 ;print path-find process sequentially
                 wait delay
@@ -586,7 +564,7 @@ to dfs
   ask commuters [
     if destination != nobody [
       let cmter self
-      let des-of-cmter destination
+      let des-of-cmter [destination] of cmter
 
       ;reset path of commuter
       set path-dfs []
@@ -611,7 +589,7 @@ to dfs
 
         ;vertex which at front of frontier is first chosen
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         ;push successors which were not in the extended-state to frontier
@@ -621,12 +599,12 @@ to dfs
             set pre-vertice-pointer current-vertice
             set frontier fput self frontier
 
-;            ;set link along path to another color
-;            ask link [who] of current-vertice [who] of self  [set color pink set thickness 0.3]
-;
-;            ;print path-find process sequentially
-;            wait delay
-;            display
+            ;set link along path to another color
+            ask link [who] of current-vertice [who] of self  [set color pink set thickness 0.3]
+
+            ;print path-find process sequentially
+            wait delay
+            display
           ]
 
           ;we stop the process whenever the successor is goal
@@ -644,9 +622,10 @@ to dfs
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-dfs  [set color pink set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-dfs  [set color red set thickness 0.3]
 
                 ;print path-find process sequentially
+                show "find root"
                 wait delay
                 display
               ]
@@ -664,10 +643,10 @@ to dfs
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-212
-10
-1516
-675
+233
+12
+1537
+677
 -1
 -1
 16.0
@@ -691,10 +670,10 @@ ticks
 30.0
 
 BUTTON
-5
-10
-101
-43
+7
+12
+103
+45
 Create Map
 setup
 NIL
@@ -707,26 +686,11 @@ NIL
 NIL
 1
 
-SLIDER
-5
-100
-177
-133
-number-of-commuters
-number-of-commuters
-1
-10
-6.0
-1
-1
-NIL
-HORIZONTAL
-
 BUTTON
-9
-196
-156
-229
+5
+183
+152
+216
 generate destination
 generate-destination
 NIL
@@ -740,10 +704,27 @@ NIL
 0
 
 BUTTON
-20
-560
-147
-593
+6
+272
+116
+305
+Find path by GBFS
+reset-perspective\ngbfs
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+35
+645
+162
+678
 Go to Destination
 go
 NIL
@@ -754,63 +735,131 @@ NIL
 NIL
 NIL
 NIL
+0
+
+BUTTON
+6
+316
+125
+349
+Find path by A*
+reset-perspective\na-star
+NIL
 1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
 
 TEXTBOX
-15
-292
-154
-310
-color of GBFS: yellow
+124
+279
+263
+297
+path color: yellow
 11
 0.0
 1
 
 TEXTBOX
-15
-317
-165
-335
-color of A*: violet
+132
+327
+282
+345
+path color: violet
 11
 0.0
 1
 
-TEXTBOX
-15
+BUTTON
+6
+359
+133
 392
-165
-410
-color of DFS: pink
+Find path by UCS
+reset-perspective\nucs
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+6
+403
+131
+436
+Find path by BFS
+reset-perspective\nbfs
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+6
+449
+132
+482
+Find path by DFS
+reset-perspective\ndfs
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+TEXTBOX
+138
+458
+288
+476
+path color: pink
 11
 0.0
 1
 
 TEXTBOX
-15
-342
-165
-360
-color of UCS: blue
+138
+369
+288
+387
+path color: blue
 11
 0.0
 1
 
 TEXTBOX
-15
-367
-165
-385
-color of BFS: green
+136
+414
+286
+432
+path color green
 11
 0.0
 1
 
 SLIDER
-5
-55
-177
-88
+6
+53
+178
+86
 delay
 delay
 0
@@ -821,11 +870,21 @@ delay
 NIL
 HORIZONTAL
 
+CHOOSER
+35
+589
+173
+634
+search-strategy
+search-strategy
+"GBFS" "A*" "UCS" "BFS" "DFS"
+0
+
 BUTTON
-10
-155
-156
-188
+5
+142
+151
+175
 generate commuters
 generate-commuters
 NIL
@@ -836,13 +895,13 @@ NIL
 NIL
 NIL
 NIL
-1
+0
 
 BUTTON
-36
-515
-131
-548
+34
+545
+129
+578
 reset roads
 clear-path
 NIL
@@ -853,41 +912,41 @@ NIL
 NIL
 NIL
 NIL
-1
-
-BUTTON
-10
-240
-172
-273
-random search strategy
-rand-search-strategy
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
-1
-
-BUTTON
-15
-420
-167
-453
-Find path respectively
-find-path
-NIL
-1
-T
-OBSERVER
-NIL
-NIL
-NIL
-NIL
 0
+
+BUTTON
+5
+95
+67
+128
+focus
+watch one-of commuters
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+75
+95
+147
+128
+unfocus
+reset-perspective
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?

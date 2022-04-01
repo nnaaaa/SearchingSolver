@@ -157,6 +157,7 @@ to generate-commuters
     set path-dfs []
     let mynode one-of vertices with [ center? != true ]
     move-to mynode
+    watch-me
   ]
 end
 
@@ -174,7 +175,11 @@ to generate-destination
     ask destination [
       set size 1.5
       set color yellow
+
+      watch-me
     ]
+
+
   ]
 end
 
@@ -209,7 +214,7 @@ to go
       foreach path [
         v ->
         move-to v
-
+        watch-me
         if i != 0 [
           set next-vertice v
           ask link [who] of pre-vertice [who] of next-vertice  [set color orange set thickness 0.1]
@@ -257,7 +262,7 @@ to gbfs
         ;vertex which h is minimum is first chosen
         set frontier sort-by [[v1 v2] -> [hvalue] of v1 < [hvalue] of v2] frontier
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         ;push successors which were not in the extended-state to frontier
@@ -337,7 +342,7 @@ to a-star
         ;vertex which h + g is minimum is first chosen
         set frontier sort-by [[v1 v2] -> ([hvalue] of v1 + [cost-a-star] of v1) < ([hvalue] of v2 + [cost-a-star] of v2)]  frontier
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         if current-vertice = destination [
@@ -417,7 +422,7 @@ to ucs
         ;vertex which g is minimum is first chosen
         set frontier sort-by [[v1 v2] -> [cost-ucs] of v1 < [cost-ucs] of v2]  frontier
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         if current-vertice = destination [
@@ -503,7 +508,7 @@ to bfs
 
         ;vertex which at front of frontier is first chosen
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         ;push successors which were not in the extended-state to frontier
@@ -584,7 +589,7 @@ to dfs
 
         ;vertex which at front of frontier is first chosen
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         ;push successors which were not in the extended-state to frontier
@@ -704,7 +709,7 @@ BUTTON
 116
 305
 Find path by GBFS
-gbfs
+reset-perspective\ngbfs
 NIL
 1
 T
@@ -730,7 +735,7 @@ NIL
 NIL
 NIL
 NIL
-1
+0
 
 BUTTON
 6
@@ -738,7 +743,7 @@ BUTTON
 125
 349
 Find path by A*
-a-star
+reset-perspective\na-star
 NIL
 1
 T
@@ -775,7 +780,7 @@ BUTTON
 133
 392
 Find path by UCS
-ucs
+reset-perspective\nucs
 NIL
 1
 T
@@ -792,7 +797,7 @@ BUTTON
 131
 436
 Find path by BFS
-bfs
+reset-perspective\nbfs
 NIL
 1
 T
@@ -809,7 +814,7 @@ BUTTON
 132
 482
 Find path by DFS
-dfs
+reset-perspective\ndfs
 NIL
 1
 T
@@ -873,7 +878,7 @@ CHOOSER
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-4
+0
 
 BUTTON
 5
@@ -890,7 +895,7 @@ NIL
 NIL
 NIL
 NIL
-1
+0
 
 BUTTON
 34
@@ -899,6 +904,40 @@ BUTTON
 578
 reset roads
 clear-path
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+0
+
+BUTTON
+5
+95
+67
+128
+focus
+watch one-of commuters
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+75
+95
+147
+128
+unfocus
+reset-perspective
 NIL
 1
 T

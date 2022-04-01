@@ -15,6 +15,7 @@ patches-own[
 ]
 
 vertices-own [
+  jam?
   entrance?
 
   visited?
@@ -75,6 +76,13 @@ to import-roads
     foreach gis:vertex-lists-of road-feature [
       v ->
 
+      ;in these vertex, traffic jam happen randomly
+      let jam-roads 50
+      if rush-hours?[
+        set jam-roads random 100
+      ]
+
+
       let pre-node-pointer nobody
 
       foreach v [
@@ -82,13 +90,19 @@ to import-roads
         let location gis:location-of node
         if not empty? location [
           create-vertices 1 [
+            set jam? false
             set shape "star"
             set size 0.3
             set color brown
             setxy item 0 location item 1 location
+
+            ;traffic jam happen
+            if jam-roads < 11[
+              set-vertex-jam
+            ]
+
             if pre-node-pointer != nobody [
               create-link-with pre-node-pointer
-
             ]
 
             set pre-node-pointer self
@@ -130,6 +144,13 @@ to delete-not-connected
   ask vertices with [ visited? = false][die]
 end
 
+to set-vertex-jam
+  set shape "x"
+  set size 0.8
+  set color red
+  set jam? true
+end
+
 to set-entrances
   ask patches with [center? = true][
     let entrance min-one-of vertices [distance myself]
@@ -137,7 +158,10 @@ to set-entrances
       set entrance? true
       set shape "star"
       set size 0.8
-      set color red
+      set color turquoise
+      if jam? = true [
+        set-vertex-jam
+      ]
     ]
   ]
 end
@@ -167,9 +191,11 @@ to generate-commuters
     set starting-point mynode
 
     ask mynode[
+      set shape "house"
       set size 1.5
       set color yellow
     ]
+    watch-me
     move-to mynode
   ]
 end
@@ -184,10 +210,12 @@ to generate-destination
       ]
     ]
 
-    set destination one-of vertices with [ entrance? = true ]
+    set destination one-of vertices with [ entrance? = true and jam? = false ]
     ask destination [
+      set shape "house"
       set size 1.5
       set color yellow
+      watch-me
     ]
 
   ]
@@ -205,7 +233,7 @@ to clear-path
 end
 
 to reset-entire-path
-  ask links [set thickness 0.1 set color orange]
+  ask links [set thickness 0.1 set color 134]
 end
 
 to go
@@ -224,7 +252,7 @@ to go
       foreach path [
         v ->
         move-to v
-
+        watch-me
         if i != 0 [
           set next-vertice v
           ask link [who] of pre-vertice [who] of next-vertice  [set color orange set thickness 0.1]
@@ -275,12 +303,12 @@ to gbfs
         ;vertex which h is minimum is first chosen
         set frontier sort-by [[v1 v2] -> [hvalue] of v1 < [hvalue] of v2] frontier
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not visited? and not member? self frontier and foundGoal? = false [
+          if not visited? and not member? self frontier and not jam? and foundGoal? = false [
             set cost-gbfs ([cost-gbfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier lput self frontier
@@ -307,7 +335,7 @@ to gbfs
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow - 3 set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow + 4 set thickness 0.3]
 
                 ;print path-find process sequentially
                 wait delay
@@ -359,7 +387,7 @@ to a-star
         ;vertex which h + g is minimum is first chosen
         set frontier sort-by [[v1 v2] -> ([hvalue] of v1 + [cost-a-star] of v1) < ([hvalue] of v2 + [cost-a-star] of v2)]  frontier
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         if current-vertice = des-of-cmter [
@@ -371,7 +399,7 @@ to a-star
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-a-star  [set color violet - 3 set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-a-star  [set color violet + 3 set thickness 0.3]
 
             ;print path-find process sequentially
             wait delay
@@ -383,7 +411,7 @@ to a-star
 
         ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not visited? [
+          if not visited? and not jam? [
             set pre-vertice-pointer current-vertice
             ;path cost of "self"
             set cost-a-star ([cost-a-star] of current-vertice + distance current-vertice)
@@ -444,7 +472,7 @@ to ucs
         ;vertex which g is minimum is first chosen
         set frontier sort-by [[v1 v2] -> [cost-ucs] of v1 < [cost-ucs] of v2]  frontier
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         if current-vertice = des-of-cmter [
@@ -456,7 +484,7 @@ to ucs
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-ucs  [set color blue - 3 set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-ucs  [set color blue + 3 set thickness 0.3]
 
             ;print path-find process sequentially
             wait delay
@@ -468,7 +496,7 @@ to ucs
 
         ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not visited? [
+          if not visited? and not jam? [
             set pre-vertice-pointer current-vertice
             ;path cost of "self"
             set cost-ucs ([cost-ucs] of current-vertice + distance current-vertice)
@@ -533,12 +561,12 @@ to bfs
 
         ;vertex which at front of frontier is first chosen
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not visited? and not member? self frontier and foundGoal? = false[
+          if not visited? and not member? self frontier and not jam? and foundGoal? = false[
             set cost-bfs ([cost-bfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier lput self frontier
@@ -566,7 +594,7 @@ to bfs
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-bfs  [set color green - 3 set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-bfs  [set color green + 3 set thickness 0.3]
 
                 ;print path-find process sequentially
                 wait delay
@@ -618,12 +646,12 @@ to dfs
 
         ;vertex which at front of frontier is first chosen
         let current-vertice first frontier
-        ask current-vertice [set visited? true]
+        ask current-vertice [set visited? true watch-me]
         set frontier but-first frontier
 
         ;push successors which were not in the extended-state to frontier
         ask [link-neighbors] of current-vertice[
-          if not visited? and foundGoal? = false [
+          if not visited? and not jam? and foundGoal? = false [
             set cost-dfs ([cost-dfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier fput self frontier
@@ -651,7 +679,7 @@ to dfs
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-dfs  [set color red set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-dfs  [set color pink + 3 set thickness 0.3]
 
                 ;print path-find process sequentially
                 show "find root"
@@ -693,8 +721,8 @@ GRAPHICS-WINDOW
 1
 1
 0
-1
-1
+0
+0
 1
 -40
 40
@@ -707,10 +735,10 @@ ticks
 30.0
 
 BUTTON
-10
-10
-106
-43
+9
+52
+105
+85
 Create Map
 setup
 NIL
@@ -724,10 +752,10 @@ NIL
 1
 
 BUTTON
-10
-165
-157
-198
+9
+235
+156
+268
 generate destination
 generate-destination
 NIL
@@ -741,10 +769,10 @@ NIL
 0
 
 BUTTON
-10
-540
-137
-573
+16
+595
+143
+628
 Go
 go
 NIL
@@ -758,60 +786,60 @@ NIL
 0
 
 TEXTBOX
-15
-345
-154
-363
+12
+393
+151
+411
 path color of GBFS: yellow
 11
 0.0
 1
 
 TEXTBOX
-15
-375
-165
-393
+12
+423
+162
+441
 path color of A*: violet
 11
 0.0
 1
 
 TEXTBOX
-15
-465
-165
-483
+12
+513
+162
+531
 path color of DFS: pink
 11
 0.0
 1
 
 TEXTBOX
-15
-405
-165
-423
+12
+453
+162
+471
 path color of UCS: blue
 11
 0.0
 1
 
 TEXTBOX
-15
-435
-165
-453
+12
+483
+162
+501
 path color of BFS: green
 11
 0.0
 1
 
 SLIDER
-10
-55
-182
-88
+9
+92
+181
+125
 delay
 delay
 0
@@ -824,19 +852,19 @@ HORIZONTAL
 
 CHOOSER
 10
-235
+298
 148
-280
+343
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-1
+4
 
 BUTTON
-10
-125
-156
-158
+9
+195
+155
+228
 generate commuters
 generate-commuters
 NIL
@@ -851,20 +879,20 @@ NIL
 
 SWITCH
 10
-290
+352
 112
-323
+385
 go-back?
 go-back?
-0
+1
 1
 -1000
 
 BUTTON
-10
-500
-137
-534
+16
+555
+143
+589
 Find path
 find-path
 NIL
@@ -878,10 +906,10 @@ NIL
 0
 
 BUTTON
-12
-584
-138
-615
+18
+639
+144
+672
 reset roads
 clear-path
 NIL
@@ -893,6 +921,51 @@ NIL
 NIL
 NIL
 0
+
+SWITCH
+9
+12
+126
+45
+rush-hours?
+rush-hours?
+0
+1
+-1000
+
+BUTTON
+9
+130
+73
+164
+focus
+watch one-of commuters
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+BUTTON
+82
+130
+157
+164
+unfocus
+reset-perspective
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
 
 @#$#@#$#@
 ## WHAT IS IT?
