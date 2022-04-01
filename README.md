@@ -25,6 +25,15 @@ Areas
 Netlogo
 ![](map_from_satelite/HCM_District7_VietNam_gis.png)
 
+> Kyiv capital, Ukraine: <br>
+Around areas
+![](map_from_satelite/Kyiv_Ukraine.png)
+Areas
+![](map_from_satelite/Kyiv_Ukraine_detail.png)
+Netlogo
+![](map_from_satelite/Kyiv_Ukraine_gis.png)
+
+
 
 
 - We create 3 file with 3 level to operate easier. In 2 last level, we wanna find path in traffic jam situation. People have to avoid junctions where happen the jam ![](map_key/jam.PNG)
