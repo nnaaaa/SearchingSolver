@@ -56,7 +56,7 @@ end
 
 to import-buildings
   if map-type = "Tokyo_Japan"[
-    set buildings gis:load-dataset "roadMap/1/1b.shp"
+    set buildings gis:load-dataset "ktx/buildings-polygon.shp"
   ]
   if map-type = "Florida_American"[
     set buildings gis:load-dataset "roadMap/2/2b.shp"
@@ -77,6 +77,7 @@ to import-buildings
     ask patch item 0 center item 1 center [
       set center? true
       set plabel gis:property-value building "name"
+      set plabel-color r
     ]
   ]
 end
@@ -84,7 +85,7 @@ end
 to import-roads
 
   if map-type = "Tokyo_Japan"[
-    set roads gis:load-dataset "roadMap/1/1.shp"
+    set roads gis:load-dataset "ktx/roads-line.shp"
   ]
   if map-type = "Florida_American"[
     set roads gis:load-dataset "roadMap/2/2.shp"
