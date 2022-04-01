@@ -76,7 +76,8 @@ to import-buildings
     let center gis:location-of gis:centroid-of building
     ask patch item 0 center item 1 center [
       set center? true
-      set plabel gis:property-value building "name"
+      ;set plabel gis:property-value building "name"
+      set plabel-color red
     ]
   ]
 end
@@ -255,7 +256,7 @@ to clear-path
 end
 
 to reset-entire-path
-  ask links [set thickness 0.1 set color 134]
+  ask links [set thickness 0.2 set color 23]
 end
 
 to go
@@ -869,7 +870,7 @@ delay
 0.0
 0.1
 1
-NIL
+seconds
 HORIZONTAL
 
 CHOOSER
@@ -994,14 +995,14 @@ rush-hours-probability
 HORIZONTAL
 
 CHOOSER
-5
+6
 20
-162
+163
 65
 map-type
 map-type
 "Tokyo_Japan" "Florida_American" "HoChiMinh_VietNam" "Nasik_India"
-1
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
