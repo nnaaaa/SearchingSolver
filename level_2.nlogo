@@ -77,11 +77,7 @@ to import-roads
       v ->
 
       ;in these vertex, traffic jam happen randomly
-      let jam-roads 50
-      if rush-hours?[
-        set jam-roads random 100
-      ]
-
+      let jam-roads random 100
 
       let pre-node-pointer nobody
 
@@ -97,7 +93,7 @@ to import-roads
             setxy item 0 location item 1 location
 
             ;traffic jam happen
-            if jam-roads < 11[
+            if jam-roads < rush-hours-probability[
               set-vertex-jam
             ]
 
@@ -735,10 +731,10 @@ ticks
 30.0
 
 BUTTON
-9
-52
-105
-85
+10
+50
+106
+83
 Create Map
 setup
 NIL
@@ -752,10 +748,10 @@ NIL
 1
 
 BUTTON
-9
-235
-156
-268
+10
+230
+157
+263
 generate destination
 generate-destination
 NIL
@@ -769,9 +765,9 @@ NIL
 0
 
 BUTTON
-16
+35
 595
-143
+162
 628
 Go
 go
@@ -786,60 +782,60 @@ NIL
 0
 
 TEXTBOX
-12
-393
-151
-411
+35
+395
+174
+413
 path color of GBFS: yellow
 11
 0.0
 1
 
 TEXTBOX
-12
-423
-162
-441
+35
+425
+185
+443
 path color of A*: violet
 11
 0.0
 1
 
 TEXTBOX
-12
-513
-162
-531
+35
+515
+185
+533
 path color of DFS: pink
 11
 0.0
 1
 
 TEXTBOX
-12
-453
-162
-471
+35
+455
+185
+473
 path color of UCS: blue
 11
 0.0
 1
 
 TEXTBOX
-12
-483
-162
-501
+35
+485
+185
+503
 path color of BFS: green
 11
 0.0
 1
 
 SLIDER
-9
-92
-181
-125
+10
+90
+182
+123
 delay
 delay
 0
@@ -852,19 +848,19 @@ HORIZONTAL
 
 CHOOSER
 10
-298
+295
 148
-343
+340
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
 4
 
 BUTTON
-9
-195
-155
-228
+10
+190
+156
+223
 generate commuters
 generate-commuters
 NIL
@@ -879,9 +875,9 @@ NIL
 
 SWITCH
 10
-352
+349
 112
-385
+382
 go-back?
 go-back?
 1
@@ -889,9 +885,9 @@ go-back?
 -1000
 
 BUTTON
-16
+35
 555
-143
+162
 589
 Find path
 find-path
@@ -906,9 +902,9 @@ NIL
 0
 
 BUTTON
-18
+37
 639
-144
+163
 672
 reset roads
 clear-path
@@ -922,22 +918,11 @@ NIL
 NIL
 0
 
-SWITCH
-9
-12
-126
-45
-rush-hours?
-rush-hours?
-0
-1
--1000
-
 BUTTON
-9
-130
-73
-164
+10
+128
+74
+162
 focus
 watch one-of commuters
 NIL
@@ -951,10 +936,10 @@ NIL
 1
 
 BUTTON
-82
-130
-157
-164
+83
+128
+158
+162
 unfocus
 reset-perspective
 NIL
@@ -966,6 +951,21 @@ NIL
 NIL
 NIL
 1
+
+SLIDER
+10
+10
+197
+43
+rush-hours-probability
+rush-hours-probability
+0
+100
+3.0
+1
+1
+%
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?

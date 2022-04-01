@@ -175,6 +175,7 @@ to generate-destination
     ask destination [
       set size 1.5
       set color yellow
+      set shape "house"
 
       watch-me
     ]
@@ -670,10 +671,10 @@ ticks
 30.0
 
 BUTTON
-7
-12
-103
-45
+25
+20
+121
+53
 Create Map
 setup
 NIL
@@ -687,10 +688,10 @@ NIL
 1
 
 BUTTON
-5
-183
-152
-216
+20
+215
+167
+248
 generate destination
 generate-destination
 NIL
@@ -704,10 +705,10 @@ NIL
 0
 
 BUTTON
-6
-272
-116
-305
+9
+297
+119
+330
 Find path by GBFS
 reset-perspective\ngbfs
 NIL
@@ -721,10 +722,10 @@ NIL
 0
 
 BUTTON
-35
-645
-162
-678
+40
+640
+167
+673
 Go to Destination
 go
 NIL
@@ -738,10 +739,10 @@ NIL
 0
 
 BUTTON
-6
-316
-125
-349
+9
+342
+128
+375
 Find path by A*
 reset-perspective\na-star
 NIL
@@ -755,30 +756,30 @@ NIL
 0
 
 TEXTBOX
-124
-279
-263
-297
+128
+304
+267
+322
 path color: yellow
 11
 0.0
 1
 
 TEXTBOX
-132
-327
-282
-345
+136
+352
+286
+370
 path color: violet
 11
 0.0
 1
 
 BUTTON
-6
-359
-133
-392
+9
+384
+136
+417
 Find path by UCS
 reset-perspective\nucs
 NIL
@@ -792,10 +793,10 @@ NIL
 0
 
 BUTTON
-6
-403
-131
-436
+9
+428
+134
+461
 Find path by BFS
 reset-perspective\nbfs
 NIL
@@ -809,10 +810,10 @@ NIL
 0
 
 BUTTON
-6
-449
-132
-482
+9
+474
+135
+507
 Find path by DFS
 reset-perspective\ndfs
 NIL
@@ -826,40 +827,40 @@ NIL
 0
 
 TEXTBOX
-138
-458
-288
-476
+142
+483
+292
+501
 path color: pink
 11
 0.0
 1
 
 TEXTBOX
-138
-369
-288
-387
+142
+394
+292
+412
 path color: blue
 11
 0.0
 1
 
 TEXTBOX
-136
-414
-286
-432
+139
+439
+289
+457
 path color green
 11
 0.0
 1
 
 SLIDER
-6
-53
-178
-86
+24
+61
+196
+94
 delay
 delay
 0
@@ -871,20 +872,20 @@ NIL
 HORIZONTAL
 
 CHOOSER
-35
+40
 589
-173
+178
 634
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-4
+0
 
 BUTTON
-5
-142
-151
-175
+20
+174
+166
+207
 generate commuters
 generate-commuters
 NIL
@@ -898,10 +899,10 @@ NIL
 0
 
 BUTTON
-34
-545
-129
-578
+39
+550
+134
+583
 reset roads
 clear-path
 NIL
@@ -915,10 +916,10 @@ NIL
 0
 
 BUTTON
-5
-95
-67
-128
+23
+103
+85
+136
 focus
 watch one-of commuters
 NIL
@@ -932,10 +933,10 @@ NIL
 1
 
 BUTTON
-75
-95
-147
-128
+93
+103
+165
+136
 unfocus
 reset-perspective
 NIL

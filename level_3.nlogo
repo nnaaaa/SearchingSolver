@@ -17,6 +17,7 @@ patches-own[
 ]
 
 vertices-own [
+  jam?
   entrance?
 
   visited?
@@ -78,6 +79,9 @@ to import-roads
     foreach gis:vertex-lists-of road-feature [
       v ->
 
+      ;in these vertex, traffic jam happen randomly
+      let jam-roads random 100
+
       let pre-node-pointer nobody
 
       foreach v [
@@ -89,6 +93,12 @@ to import-roads
             set size 0.3
             set color brown
             setxy item 0 location item 1 location
+
+            ;traffic jam happen
+            if jam-roads < rush-hours-probability[
+              set-vertex-jam
+            ]
+
             if pre-node-pointer != nobody [
               create-link-with pre-node-pointer
 
@@ -104,6 +114,13 @@ to import-roads
   delete-not-connected
 
   reset-entire-path
+end
+
+to set-vertex-jam
+  set shape "x"
+  set size 0.8
+  set color red
+  set jam? true
 end
 
 to delete-duplicates
@@ -140,7 +157,7 @@ to set-entrances
       set entrance? true
       set shape "star"
       set size 0.8
-      set color red
+      set color turquoise
     ]
   ]
 end
@@ -182,12 +199,13 @@ to generate-destination
     ask destination [
       set shape "star"
       set size 0.8
-      set color red
+      set color turquoise
     ]
   ]
 
   set destination one-of vertices with [ entrance? = true ]
   ask destination [
+    set shape "house"
     set size 1.5
     set color yellow
   ]
@@ -205,7 +223,7 @@ to clear-path
 end
 
 to reset-entire-path
-  ask links [set thickness 0.1 set color orange]
+  ask links [set thickness 0.1 set color 134]
 end
 
 to find-path
@@ -691,10 +709,10 @@ ticks
 30.0
 
 BUTTON
-5
 10
-101
-43
+55
+106
+88
 Create Map
 setup
 NIL
@@ -708,10 +726,10 @@ NIL
 1
 
 SLIDER
-5
-100
-177
-133
+10
+135
+182
+168
 number-of-commuters
 number-of-commuters
 1
@@ -723,10 +741,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-9
-196
-156
-229
+15
+250
+162
+283
 generate destination
 generate-destination
 NIL
@@ -740,10 +758,10 @@ NIL
 0
 
 BUTTON
-20
-560
-147
-593
+30
+630
+157
+663
 Go to Destination
 go
 NIL
@@ -757,60 +775,60 @@ NIL
 1
 
 TEXTBOX
-15
-292
-154
-310
+20
+370
+159
+388
 color of GBFS: yellow
 11
 0.0
 1
 
 TEXTBOX
-15
-317
-165
-335
+20
+395
+170
+413
 color of A*: violet
 11
 0.0
 1
 
 TEXTBOX
-15
-392
-165
-410
+20
+470
+170
+488
 color of DFS: pink
 11
 0.0
 1
 
 TEXTBOX
-15
-342
-165
-360
+20
+420
+170
+438
 color of UCS: blue
 11
 0.0
 1
 
 TEXTBOX
-15
-367
-165
-385
+20
+445
+170
+463
 color of BFS: green
 11
 0.0
 1
 
 SLIDER
-5
-55
-177
-88
+10
+95
+182
+128
 delay
 delay
 0
@@ -822,10 +840,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-10
-155
-156
-188
+15
+210
+161
+243
 generate commuters
 generate-commuters
 NIL
@@ -839,10 +857,10 @@ NIL
 1
 
 BUTTON
-36
-515
-131
-548
+30
+585
+125
+618
 reset roads
 clear-path
 NIL
@@ -856,10 +874,10 @@ NIL
 1
 
 BUTTON
-10
-240
-172
-273
+15
+290
+177
+323
 random search strategy
 rand-search-strategy
 NIL
@@ -874,9 +892,9 @@ NIL
 
 BUTTON
 15
-420
+490
 167
-453
+523
 Find path respectively
 find-path
 NIL
@@ -888,6 +906,21 @@ NIL
 NIL
 NIL
 0
+
+SLIDER
+10
+15
+197
+48
+rush-hours-probability
+rush-hours-probability
+0
+100
+8.0
+1
+1
+%
+HORIZONTAL
 
 @#$#@#$#@
 ## WHAT IS IT?
