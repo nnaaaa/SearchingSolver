@@ -311,13 +311,6 @@ to gbfs [#commuter]
             set cost-gbfs ([cost-gbfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier lput self frontier
-
-            ;set link along path to another color
-;            ask link [who] of current-vertice [who] of self  [set color yellow set thickness 0.3]
-;
-;            ;print path-find process sequentially
-;            wait delay
-;            display
           ]
 
           if self = des-of-cmter [
@@ -424,11 +417,6 @@ to a-star [#commuter]
             ]
             if change-frontier? = false [
               set frontier lput self frontier
-;              ask link [who] of current-vertice [who] of self  [set color violet set thickness 0.3]
-;
-;              ;print path-find process sequentially
-;              wait delay
-;              display
             ]
           ]
         ]
@@ -504,13 +492,6 @@ to ucs [#commuter]
             ]
             if change-frontier? = false [
               set frontier lput self frontier
-
-;              ;set link along path to another color
-;              ask link [who] of current-vertice [who] of self  [set color blue set thickness 0.3]
-;
-;              ;print path-find process sequentially
-;              wait delay
-;              display
             ]
           ]
         ]
@@ -557,13 +538,6 @@ to bfs [#commuter]
             set cost-bfs ([cost-bfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier lput self frontier
-
-            ;set link along path to another color
-;            ask link [who] of current-vertice [who] of self  [set color green set thickness 0.3]
-;
-;            ;print path-find process sequentially
-;            wait delay
-;            display
           ]
 
           ;we stop the process whenever the successor is goal
@@ -638,13 +612,6 @@ to dfs [#commuter]
             set cost-dfs ([cost-dfs] of current-vertice + distance current-vertice)
             set pre-vertice-pointer current-vertice
             set frontier fput self frontier
-
-;            ;set link along path to another color
-;            ask link [who] of current-vertice [who] of self  [set color pink set thickness 0.3]
-;
-;            ;print path-find process sequentially
-;            wait delay
-;            display
           ]
 
           ;we stop the process whenever the successor is goal
@@ -916,7 +883,7 @@ rush-hours-probability
 rush-hours-probability
 0
 100
-8.0
+4.0
 1
 1
 %
