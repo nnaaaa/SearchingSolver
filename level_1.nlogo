@@ -262,6 +262,12 @@ to clear-path
     set path-ucs []
     set path-bfs []
     set path-dfs []
+
+    set path-cost-gbfs 0
+    set path-cost-a-star 0
+    set path-cost-ucs 0
+    set path-cost-bfs 0
+    set path-cost-dfs 0
   ]
   reset-entire-path
 end
@@ -742,9 +748,9 @@ ticks
 30.0
 
 BUTTON
-18
+8
 66
-114
+104
 99
 Create Map
 setup
@@ -759,10 +765,10 @@ NIL
 1
 
 BUTTON
-35
-247
-182
-280
+8
+226
+155
+259
 generate destination
 generate-destination
 NIL
@@ -777,9 +783,9 @@ NIL
 
 BUTTON
 8
-305
+272
 118
-338
+305
 Find path by GBFS
 reset-perspective\ngbfs
 NIL
@@ -793,10 +799,10 @@ NIL
 0
 
 BUTTON
-40
-640
-167
-673
+9
+643
+136
+676
 Go to Destination
 go
 NIL
@@ -811,9 +817,9 @@ NIL
 
 BUTTON
 8
-349
+325
 127
-382
+358
 Find path by A*
 reset-perspective\na-star
 NIL
@@ -827,30 +833,30 @@ NIL
 0
 
 TEXTBOX
-127
-312
-266
-330
+9
+307
+148
+325
 path color: yellow
 11
 0.0
 1
 
 TEXTBOX
-135
-359
-285
-377
+10
+360
+160
+378
 path color: violet
 11
 0.0
 1
 
 BUTTON
-8
-392
-135
-425
+7
+379
+134
+412
 Find path by UCS
 reset-perspective\nucs
 NIL
@@ -864,10 +870,10 @@ NIL
 0
 
 BUTTON
-8
-436
-133
-469
+7
+433
+132
+466
 Find path by BFS
 reset-perspective\nbfs
 NIL
@@ -881,10 +887,10 @@ NIL
 0
 
 BUTTON
-8
-482
-134
-515
+7
+484
+133
+517
 Find path by DFS
 reset-perspective\ndfs
 NIL
@@ -898,39 +904,39 @@ NIL
 0
 
 TEXTBOX
-140
-490
-290
-508
+8
+519
+158
+537
 path color: pink
 11
 0.0
 1
 
 TEXTBOX
-140
-402
-290
-420
+9
+414
+159
+432
 path color: blue
 11
 0.0
 1
 
 TEXTBOX
-138
-447
-288
-465
+9
+467
+159
+485
 path color green
 11
 0.0
 1
 
 SLIDER
-18
+8
 105
-190
+180
 138
 delay
 delay
@@ -943,20 +949,20 @@ seconds
 HORIZONTAL
 
 CHOOSER
-40
-589
-178
-634
+9
+593
+147
+638
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
 0
 
 BUTTON
-35
-206
-181
-239
+8
+185
+154
+218
 generate commuters
 generate-commuters
 NIL
@@ -970,10 +976,10 @@ NIL
 0
 
 BUTTON
-39
-550
-134
-583
+9
+553
+104
+586
 reset roads
 clear-path
 NIL
@@ -987,9 +993,9 @@ NIL
 0
 
 BUTTON
-18
+8
 145
-80
+70
 178
 focus
 watch one-of commuters
@@ -1004,9 +1010,9 @@ NIL
 1
 
 BUTTON
-88
+78
 145
-160
+150
 178
 unfocus
 reset-perspective
@@ -1021,14 +1027,69 @@ NIL
 1
 
 CHOOSER
-18
+8
 14
-232
+194
 59
 map-type
 map-type
 "Tokyo_Japan" "Florida_American" "HoChiMinh_District-7_VietNam" "Changchun_China" "Kyiv_Ukraine"
 2
+
+MONITOR
+150
+270
+210
+315
+path cost
+[path-cost-gbfs] of one-of commuters
+17
+1
+11
+
+MONITOR
+150
+325
+212
+370
+path cost
+[path-cost-a-star] of one-of commuters
+17
+1
+11
+
+MONITOR
+150
+380
+212
+425
+path cost
+[path-cost-ucs] of one-of commuters
+17
+1
+11
+
+MONITOR
+150
+430
+212
+475
+path cost
+[path-cost-bfs] of one-of commuters
+17
+1
+11
+
+MONITOR
+150
+480
+212
+525
+path cost
+[path-cost-dfs] of one-of commuters
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?

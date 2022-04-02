@@ -63,6 +63,8 @@ to setup
   set destination nobody
   set-entrances
 
+  output-write "hello"
+
 end
 
 to import-scenes
@@ -279,6 +281,8 @@ to generate-destination
     set shape "house"
     set size 1.5
     set color yellow
+
+    watch-me
   ]
 end
 
@@ -398,7 +402,7 @@ to gbfs [#commuter]
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-gbfs  [set color yellow set thickness 0.3 watch-me]
 
                 ;print path-find process sequentially
                 wait delay
@@ -458,7 +462,7 @@ to a-star [#commuter]
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-a-star  [set color violet set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-a-star  [set color violet set thickness 0.3 watch-me]
 
             ;print path-find process sequentially
             wait delay
@@ -533,7 +537,7 @@ to ucs [#commuter]
             set current-vertice [pre-vertice-pointer] of current-vertice
 
             ;set link along path to another color
-            ask link [who] of current-vertice [who] of first path-ucs  [set color blue set thickness 0.3]
+            ask link [who] of current-vertice [who] of first path-ucs  [set color blue set thickness 0.3 watch-me]
 
             ;print path-find process sequentially
             wait delay
@@ -626,7 +630,7 @@ to bfs [#commuter]
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-bfs  [set color green set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-bfs  [set color green set thickness 0.3 watch-me]
 
                 ;print path-find process sequentially
                 wait delay
@@ -700,7 +704,7 @@ to dfs [#commuter]
                 set current-vertice [pre-vertice-pointer] of current-vertice
 
                 ;set link along path to another color
-                ask link [who] of current-vertice [who] of first path-dfs  [set color pink set thickness 0.3]
+                ask link [who] of current-vertice [who] of first path-dfs  [set color pink set thickness 0.3  watch-me]
 
                 ;print path-find process sequentially
                 wait delay
@@ -720,13 +724,13 @@ to dfs [#commuter]
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-218
-12
-1433
-632
+219
+64
+1478
+707
 -1
 -1
-14.90244
+13.9
 1
 10
 1
@@ -764,10 +768,10 @@ NIL
 1
 
 SLIDER
-9
-183
-181
-216
+434
+19
+606
+52
 number-of-commuters
 number-of-commuters
 1
@@ -779,10 +783,10 @@ NIL
 HORIZONTAL
 
 BUTTON
-16
-293
-163
-326
+18
+350
+165
+383
 generate destination
 generate-destination
 NIL
@@ -796,10 +800,10 @@ NIL
 0
 
 BUTTON
-35
-640
-162
-673
+27
+666
+154
+699
 Go to Destination
 go
 NIL
@@ -813,75 +817,75 @@ NIL
 1
 
 TEXTBOX
-29
-399
-168
-417
+32
+445
+171
+463
 color of GBFS: yellow
 11
 0.0
 1
 
 TEXTBOX
-29
-425
-179
-443
+32
+470
+182
+488
 color of A*: violet
 11
 0.0
 1
 
 TEXTBOX
-29
-499
-179
-517
+32
+545
+182
+563
 color of DFS: pink
 11
 0.0
 1
 
 TEXTBOX
-29
-449
-179
-467
+32
+495
+182
+513
 color of UCS: blue
 11
 0.0
 1
 
 TEXTBOX
-29
-475
-179
-493
+32
+520
+182
+538
 color of BFS: green
 11
 0.0
 1
 
 SLIDER
-9
-143
-181
-176
+614
+18
+786
+51
 delay
 delay
 0
 1
-0.1
+0.0
 0.1
 1
 seconds
 HORIZONTAL
 
 BUTTON
-16
-253
-162
-286
+18
+316
+164
+349
 generate commuters
 generate-commuters
 NIL
@@ -895,10 +899,10 @@ NIL
 1
 
 BUTTON
-35
-595
-130
-628
+27
+622
+122
+655
 reset roads
 clear-path
 NIL
@@ -912,10 +916,10 @@ NIL
 1
 
 BUTTON
-16
-333
-178
-366
+18
+385
+180
+418
 random search strategy
 rand-search-strategy
 NIL
@@ -929,10 +933,10 @@ NIL
 1
 
 BUTTON
-25
-519
-177
-552
+27
+565
+179
+598
 Find path respectively
 find-path
 NIL
@@ -968,7 +972,35 @@ CHOOSER
 map-type
 map-type
 "Tokyo_Japan" "Florida_American" "HoChiMinh_District-7_VietNam" "Changchun_China" "Kyiv_Ukraine"
-2
+4
+
+BUTTON
+797
+19
+872
+53
+unfocus
+reset-perspective
+NIL
+1
+T
+OBSERVER
+NIL
+NIL
+NIL
+NIL
+1
+
+MONITOR
+219
+14
+427
+60
+number of commuters arrived home
+count [commuters-here] of destination
+17
+1
+11
 
 @#$#@#$#@
 ## WHAT IS IT?

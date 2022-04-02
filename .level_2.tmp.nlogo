@@ -419,6 +419,7 @@ to gbfs
           ]
         ]
       ]
+
     ]
   ]
 end
@@ -1034,7 +1035,7 @@ rush-hours-probability
 rush-hours-probability
 0
 100
-0.0
+2.0
 1
 1
 %
@@ -1048,7 +1049,7 @@ CHOOSER
 map-type
 map-type
 "Tokyo_Japan" "Florida_American" "HoChiMinh_District-7_VietNam" "Changchun_China" "Kyiv_Ukraine"
-3
+4
 
 @#$#@#$#@
 ## WHAT IS IT?
