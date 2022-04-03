@@ -24,12 +24,12 @@
 
 
 > ### point <br>
-
-- junction: ![](map_color/35.PNG) ![](map_key/junction.PNG) 
-- destination (home): ![](map_color/45.PNG) ![](map_key/home.PNG) 
 - agent (people): ![](map_color/9.9.PNG) ![](map_key/people.PNG)
+- destination (home): ![](map_color/45.PNG) ![](map_key/home.PNG) 
+- junction: ![](map_color/35.PNG) ![](map_key/junction.PNG) 
 - entrance (entrance of each perspective building): ![](map_color/75.PNG) ![](map_key/entrance.PNG)
 - jam (junction which in rush hours): ![](map_color/15.PNG) ![](map_key/jam.PNG)
+
 
 
 
