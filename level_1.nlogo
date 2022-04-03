@@ -691,7 +691,7 @@ to dfs
 
             ;push all vertex lead to destination to path of commuter
             ask cmter[
-              set path-cost-bfs 0
+              set path-cost-dfs 0
             ]
             while [current-vertice != root] [
               ask cmter[
@@ -721,21 +721,21 @@ to dfs
 end
 @#$#@#$#@
 GRAPHICS-WINDOW
-233
+222
 12
-1537
-677
+1548
+688
 -1
 -1
-16.0
+14.63
 1
 10
 1
 1
 1
 0
-1
-1
+0
+0
 1
 -40
 40
@@ -784,8 +784,8 @@ NIL
 BUTTON
 8
 272
-118
-305
+135
+306
 Find path by GBFS
 reset-perspective\ngbfs
 NIL
@@ -818,8 +818,8 @@ NIL
 BUTTON
 8
 325
-127
-358
+135
+359
 Find path by A*
 reset-perspective\na-star
 NIL
@@ -872,8 +872,8 @@ NIL
 BUTTON
 7
 433
-132
-466
+135
+467
 Find path by BFS
 reset-perspective\nbfs
 NIL
@@ -889,8 +889,8 @@ NIL
 BUTTON
 7
 484
-133
-517
+135
+518
 Find path by DFS
 reset-perspective\ndfs
 NIL
@@ -942,7 +942,7 @@ delay
 delay
 0
 1
-0.4
+0.0
 0.1
 1
 seconds
@@ -956,7 +956,7 @@ CHOOSER
 search-strategy
 search-strategy
 "GBFS" "A*" "UCS" "BFS" "DFS"
-0
+3
 
 BUTTON
 8
@@ -1034,13 +1034,13 @@ CHOOSER
 map-type
 map-type
 "Tokyo_Japan" "Florida_American" "HoChiMinh_District-7_VietNam" "Changchun_China" "Kyiv_Ukraine"
-2
+3
 
 MONITOR
 150
-270
-210
-315
+273
+213
+319
 path cost
 [path-cost-gbfs] of one-of commuters
 17
@@ -1071,9 +1071,9 @@ path cost
 
 MONITOR
 150
-430
+434
 212
-475
+479
 path cost
 [path-cost-bfs] of one-of commuters
 17
@@ -1082,9 +1082,9 @@ path cost
 
 MONITOR
 150
-480
+486
 212
-525
+531
 path cost
 [path-cost-dfs] of one-of commuters
 17

@@ -220,10 +220,12 @@ to set-entrances
   ask patches with [center? = true][
     let entrance min-one-of vertices [distance myself]
     ask entrance [
-      set entrance? true
-      set shape "star"
-      set size 0.8
-      set color turquoise
+      if not jam?[
+        set entrance? true
+        set shape "star"
+        set size 0.8
+        set color turquoise
+      ]
     ]
   ]
 end
@@ -709,8 +711,8 @@ end
 GRAPHICS-WINDOW
 219
 64
-1484
-710
+1357
+645
 -1
 -1
 13.95122
@@ -941,7 +943,7 @@ rush-hours-probability
 rush-hours-probability
 0
 100
-12.0
+100.0
 1
 1
 %

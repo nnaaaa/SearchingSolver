@@ -1034,7 +1034,7 @@ rush-hours-probability
 rush-hours-probability
 0
 100
-0.0
+100.0
 1
 1
 %
