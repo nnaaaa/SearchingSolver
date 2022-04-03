@@ -10,12 +10,15 @@ To simplify the maps, we only display some important entity such as
     - roads: ![](map_key/road.PNG)
     - junction: ![](map_key/junction.PNG) 
 
+
+
 - We apply search strategies to find the way to home for anonymous peoples and help them go back home as fast as possible
 
 
 ## 2. Implementation
 
 - We need to find some location in [Open Street Map](https://openstreetmap.org), export and convert `file.osm` to `file.shp` and import them to Netlogo throw GIS Extension. Let compare the map which we imported to Netlogo and the map in open street map:
+- To see more about map key , click [here](README.md)
 
 > District 5, Ho Chi Minh, Viet Nam: <br>
 Around areas <br>
