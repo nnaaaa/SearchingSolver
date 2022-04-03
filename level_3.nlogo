@@ -709,11 +709,11 @@ end
 GRAPHICS-WINDOW
 219
 64
-1487
-711
+1484
+710
 -1
 -1
-13.99
+13.95122
 1
 10
 1
@@ -941,7 +941,7 @@ rush-hours-probability
 rush-hours-probability
 0
 100
-16.0
+12.0
 1
 1
 %
@@ -989,7 +989,7 @@ MONITOR
 437
 15
 717
-61
+60
 min path cost
 [path-cost] of min-one-of commuters with [path-cost != 0] [path-cost]
 17
@@ -1000,7 +1000,7 @@ MONITOR
 720
 15
 817
-61
+60
 search strategy
 [strategy] of min-one-of commuters with [path-cost != 0] [path-cost]
 17
