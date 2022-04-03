@@ -81,9 +81,32 @@ Netlogo <br>
 
     > Chose probability for the happening of rush-hours at one junction: ![](images/button/rush_hours_probability.PNG)
 
+    > Imitate reality map which you have chosen: ![](images/button/setup.PNG)
+
     > Chose delay when you observe the agents: ![](images/button/delay.PNG)
 
+    > Randomly create people: ![](images/button/create_commuters.PNG)
 
+    > Randomly create destination: ![](images/button/create_destination.PNG)
+
+    > Focus one people: ![](images/button/focus.PNG)
+
+    > Unfocus one people: ![](images/button/unfocus.PNG)
+
+    > Find path by search strategies respectively: <br> ![](images/button/find_path.PNG)
+
+    > Count number of people which arrived home: ![](images/button/arrived_home.PNG)
+
+    > People have min path cost to home and his strategy: ![](images/button/min_cost.PNG) ![](images/button/strategy.PNG) 
+    > <br> You can also focus on him: ![](images/button/focus_cmt_min_cost.PNG)
+
+    > Clear all path: ![](images/button/reset_road.PNG)
+
+    > Chose what strategy you want to go back home: ![](images/button/strategies.PNG)
+
+    > Go home when you applied one of search strategies: ![](images/button/go.PNG)
+
+    
 
 
 
