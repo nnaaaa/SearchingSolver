@@ -19,28 +19,53 @@ To simplify the maps, we only display some important entity such as
 
 > District 5, Ho Chi Minh, Viet Nam: <br>
 Around areas <br>
-![](map_from_satelite/HCM_District7_VietNam.png)
+![](map_from_satelite/HCM_District7_VietNam.png) <br>
 Areas <br>
-![](map_from_satelite/HCM_District7_VietNam_detail.png)
+![](map_from_satelite/HCM_District7_VietNam_detail.png) <br>
 Netlogo <br>
-![](map_from_satelite/HCM_District7_VietNam_gis.png)
+![](map_from_satelite/HCM_District7_VietNam_gis.png) <br>
+
+<br>
 
 > Kyiv capital, Ukraine: <br>
 Around areas <br>
-![](map_from_satelite/Kyiv_Ukraine.png)
+![](map_from_satelite/Kyiv_Ukraine.png) <br>
 Areas <br>
-![](map_from_satelite/Kyiv_Ukraine_detail.png)
+![](map_from_satelite/Kyiv_Ukraine_detail.png) <br>
+Netlogo <br> 
+![](map_from_satelite/Kyiv_Ukraine_gis.png) <br>
+
+<br>
+
+> Tokyo, Japan: <br>
+Around areas <br>
+![](map_from_satelite/Tokyo_Japan.png) <br>
+Areas <br>
+![](map_from_satelite/Tokyo_Japan_detail.png) <br>
 Netlogo <br>
-![](map_from_satelite/Kyiv_Ukraine_gis.png)
+![](map_from_satelite/Tokyo_Japan_gis.png) <br>
+
+<br>
+
+> Florida, American: <br>
+Around areas <br>
+![](map_from_satelite/Florida_America.png) <br>
+Areas <br>
+![](map_from_satelite/Florida_America_detail.png) <br>
+Netlogo <br>
+![](map_from_satelite/Florida_America_gis.png) <br>
+
+<br>
 
 > Changchun, China: <br>
 Around areas <br>
-![](map_from_satelite/Changchun_China.png)
+![](map_from_satelite/Changchun_China.png) <br>
 Areas <br>
-![](map_from_satelite/Changchun_China_detail.png)
+![](map_from_satelite/Changchun_China_detail.png) <br>
 Netlogo <br>
-![](map_from_satelite/Changchun_China_gis.png)
+![](map_from_satelite/Changchun_China_gis.png) <br>
 
+<br>
 
 - We create 3 file with 3 level to operate easier. In 2 last level, we wanna find path in traffic jam situation. People have to avoid junctions where happen the jam ![](map_key/jam.PNG)
 
@@ -58,7 +83,7 @@ Netlogo <br>
 
     > Chose delay when you observe the agents: ![](images/button/delay.PNG)
 
-    
+
 
 
 
