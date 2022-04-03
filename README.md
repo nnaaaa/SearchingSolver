@@ -58,6 +58,8 @@ Netlogo <br>
 
     > Chose delay when you observe the agents: ![](images/button/delay.PNG)
 
+    
+
 
 
 
