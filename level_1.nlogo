@@ -52,8 +52,8 @@ to setup
   import-buildings
   import-roads
 
-  import-buildings
   import-scenes
+  import-buildings
   import-roads
 
   set-entrances
@@ -942,7 +942,7 @@ delay
 delay
 0
 1
-0.0
+0.4
 0.1
 1
 seconds

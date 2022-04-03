@@ -54,9 +54,9 @@ to setup
   import-buildings
   import-roads
 
-  import-roads
   import-scenes
   import-buildings
+  import-roads
 
   set-entrances
 
@@ -1048,7 +1048,7 @@ CHOOSER
 map-type
 map-type
 "Tokyo_Japan" "Florida_American" "HoChiMinh_District-7_VietNam" "Changchun_China" "Kyiv_Ukraine"
-3
+0
 
 @#$#@#$#@
 ## WHAT IS IT?
