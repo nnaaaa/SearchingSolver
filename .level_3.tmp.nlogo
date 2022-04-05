@@ -688,7 +688,7 @@ number-of-commuters
 number-of-commuters
 1
 10
-5.0
+10.0
 1
 1
 NIL
@@ -904,9 +904,9 @@ NIL
 1
 
 MONITOR
-1295
+1027
 12
-1503
+1235
 57
 number of commuters arrived home
 count [commuters-here] of destination
@@ -954,10 +954,10 @@ NIL
 1
 
 PLOT
-1346
-64
-1570
-392
+1239
+14
+1571
+460
 Nodes in frontier
 time
 amount
@@ -969,11 +969,16 @@ true
 true
 "" ""
 PENS
-"1" 1.0 0 -1184463 true "" "let cmt one-of commuters with [myorder = 0]\n\nif count commuters != 0[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
-"2" 1.0 0 -8630108 true "" "let cmt one-of commuters with [myorder = 1]\n\nif count commuters != 0[\nplot (length [frontier] of cmt) + (count vertices with [ item 1 commuters-visited = true ])\n]"
-"3" 1.0 0 -13345367 true "" "let cmt one-of commuters with [myorder = 2]\n\nif count commuters != 0[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
-"4" 1.0 0 -13840069 true "" "let cmt one-of commuters with [myorder = 3]\n\nif count commuters != 0[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
-"5" 1.0 0 -2064490 true "" "let cmt one-of commuters with [myorder = 4]\n\nif count commuters != 0[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
+"1" 1.0 0 -1184463 true "" "let cmt one-of commuters with [myorder = 0]\n\nif count commuters > 0[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
+"2" 1.0 0 -8630108 true "" "let cmt one-of commuters with [myorder = 1]\n\nif count commuters > 1[\nplot (length [frontier] of cmt) + (count vertices with [ item 1 commuters-visited = true ])\n]"
+"3" 1.0 0 -13345367 true "" "let cmt one-of commuters with [myorder = 2]\n\nif count commuters > 2[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
+"4" 1.0 0 -13840069 true "" "let cmt one-of commuters with [myorder = 3]\n\nif count commuters > 3[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
+"5" 1.0 0 -2064490 true "" "let cmt one-of commuters with [myorder = 4]\n\nif count commuters > 4[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
+"6" 1.0 0 -1184463 true "" "let cmt one-of commuters with [myorder = 5]\n\nif count commuters > 5[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
+"7" 1.0 0 -8630108 true "" "let cmt one-of commuters with [myorder = 6]\n\nif count commuters > 6[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
+"8" 1.0 0 -13345367 true "" "let cmt one-of commuters with [myorder = 7]\n\nif count commuters > 7[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
+"9" 1.0 0 -13840069 true "" "let cmt one-of commuters with [myorder = 8]\n\nif count commuters > 8[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
+"10" 1.0 0 -2064490 true "" "let cmt one-of commuters with [myorder = 9]\n\nif count commuters > 9[\nplot (length [frontier] of cmt) + (count vertices with [ item 0 commuters-visited = true ])\n]"
 
 @#$#@#$#@
 ## WHAT IS IT?
