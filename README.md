@@ -109,6 +109,13 @@ Netlogo <br>
 
     > Go home when you applied one of search strategies: ![](images/button/go.PNG)
 
+- Level 3 we specially add the plot which compare the number of nodes in frontier of agents. It can help you to observe `time consuming` as well as how much `memory` which algorithms use <br>
+![](images/button/plot.PNG)
+
+
+
+
+
     
 
 
